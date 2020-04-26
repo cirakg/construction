@@ -1,0 +1,37 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.truesoft.construction"
+    },
+    "jhipsterVersion": "6.8.0",
+    "applicationType": "monolith",
+    "baseName": "construction",
+    "packageName": "com.truesoft.construction",
+    "packageFolder": "com/truesoft/construction",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "cacheProvider": "no",
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "h2Memory",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "MTM1MTlkY2Y1NTA2NTdiNDFlYjhiYzFmY2FmYmYxOGRkZjJkZmJlZjRkYTIxMTg2YWExMDQwOGY0YjhjMDM0OTQ3YmMzNDIxYzkwODEzMDY1MjUxZmRmMGQ2YzgwZTcwNjE4YmU5YWExYmI4OTUwOWVmMWQyNmUwMmQwNzE1ZmU=",
+    "embeddableLaunchScript": false,
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "skipClient": true,
+    "creationTimestamp": 1587918225075,
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": false,
+    "blueprints": []
+  }
+}

@@ -1,0 +1,11 @@
+id;price;description;status;tender_id;bidder_id
+1;79599;back-end;REJECTED;1;1
+2;90706;moderator leading-edge;ACCEPTED;2;2
+3;56106;deposit;REJECTED;3;3
+4;74708;Principal;ACCEPTED;4;4
+5;78410;THX;ACCEPTED;5;5
+6;15251;Djibouti Franc;PENDING;6;6
+7;5637;Freeway;PENDING;7;7
+8;9614;calculating;PENDING;8;8
+9;4620;virtual;REJECTED;9;9
+10;70920;Data Tuna;REJECTED;10;10

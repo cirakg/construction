@@ -1,0 +1,50 @@
+{
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "relationships": [
+        {
+            "relationshipName": "constructionSite",
+            "otherEntityName": "constructionSite",
+            "relationshipType": "one-to-one",
+            "relationshipValidateRules": [
+                "required"
+            ],
+            "otherEntityField": "id",
+            "ownerSide": true,
+            "useJPADerivedIdentifier": true,
+            "otherEntityRelationshipName": "constructionSiteWork"
+        },
+        {
+            "relationshipName": "work",
+            "otherEntityName": "work",
+            "relationshipType": "one-to-many",
+            "otherEntityRelationshipName": "constructionSiteWork"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "dateCreated",
+            "fieldType": "Instant",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "status",
+            "fieldType": "ConstructionSiteWorkStatus",
+            "fieldValues": "NEW,ACTIVE,COMPLETED,ON_HOLD",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "changelogDate": "20200426171519",
+    "dto": "no",
+    "searchEngine": false,
+    "service": "no",
+    "entityTableName": "construction_site_work",
+    "databaseType": "sql",
+    "readOnly": false,
+    "jpaMetamodelFiltering": false,
+    "pagination": "no"
+}

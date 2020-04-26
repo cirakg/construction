@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "application",
+      "type": "com.truesoft.construction.config.ApplicationProperties",
+      "sourceType": "com.truesoft.construction.config.ApplicationProperties"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}
