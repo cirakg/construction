@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
-    <!--
-        Added the constraints for entity ConstructionSiteWork.
-    -->
-    <changeSet id="20200426171519-2" author="jhipster">
-        
-        <addForeignKeyConstraint baseColumnNames="id"
-                                 baseTableName="construction_site_work"
-                                 constraintName="fk_construction_site_work_construction_site_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="construction_site"/>
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+	<!-- Added the constraints for entity ConstructionSiteWork. -->
+	<changeSet id="20200426171519-2" author="marko">
 
-    </changeSet>
+		<addForeignKeyConstraint baseColumnNames="construction_id"
+			baseTableName="construction_site_work_join"
+			constraintName="fk_construction_site_work_construction_site_id"
+			referencedColumnNames="id" referencedTableName="construction_site_work" />
+
+		<addForeignKeyConstraint baseColumnNames="work_id"
+			baseTableName="construction_site_work_join"
+			constraintName="fk_construction_site_work_work_id"
+			referencedColumnNames="id" referencedTableName="construction_site_work" />
+
+	</changeSet>
 </databaseChangeLog>

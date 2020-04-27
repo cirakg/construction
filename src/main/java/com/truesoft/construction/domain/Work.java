@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -32,9 +31,6 @@ public class Work implements Serializable {
 	@NotNull
 	@Column(name = "date_created", nullable = false)
 	private Instant dateCreated;
-
-	@ManyToOne
-	private ConstructionSiteWork constructionSiteWork;
 
 	// jhipster-needle-entity-add-field - JHipster will add fields here, do not
 	// remove
@@ -70,14 +66,6 @@ public class Work implements Serializable {
 
 	public void setDateCreated(Instant dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-
-	public ConstructionSiteWork getConstructionSiteWork() {
-		return constructionSiteWork;
-	}
-
-	public void setConstructionSiteWork(ConstructionSiteWork constructionSiteWork) {
-		this.constructionSiteWork = constructionSiteWork;
 	}
 
 	@Override

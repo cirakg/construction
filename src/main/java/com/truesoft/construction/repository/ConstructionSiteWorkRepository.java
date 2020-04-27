@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 /**
  * Spring Data  repository for the ConstructionSiteWork entity.
  */
+@SuppressWarnings("unused")
 @Repository
 public interface ConstructionSiteWorkRepository extends JpaRepository<ConstructionSiteWork, Long> {
 }

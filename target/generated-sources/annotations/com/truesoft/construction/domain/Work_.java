@@ -10,12 +10,10 @@ import javax.persistence.metamodel.StaticMetamodel;
 public abstract class Work_ {
 
 	public static volatile SingularAttribute<Work, Instant> dateCreated;
-	public static volatile SingularAttribute<Work, ConstructionSiteWork> constructionSiteWork;
 	public static volatile SingularAttribute<Work, String> description;
 	public static volatile SingularAttribute<Work, Long> id;
 
 	public static final String DATE_CREATED = "dateCreated";
-	public static final String CONSTRUCTION_SITE_WORK = "constructionSiteWork";
 	public static final String DESCRIPTION = "description";
 	public static final String ID = "id";
 
