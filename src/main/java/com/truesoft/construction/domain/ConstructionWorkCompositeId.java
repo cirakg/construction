@@ -2,12 +2,8 @@ package com.truesoft.construction.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-
-@Embeddable
 /**
- * Embeddable class for composite key (Contruction,Work)
+ * Embeddable class for composite key (Construction,Work)
  * 
  * @author marko
  *
@@ -19,14 +15,11 @@ public class ConstructionWorkCompositeId implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Column(name = "construction_id")
 	private Long constructionSiteId;
 
-	@Column(name = "work_id")
 	private Long workId;
 
 	public ConstructionWorkCompositeId() {
-		super();
 	}
 
 	public ConstructionWorkCompositeId(Long constructionSiteId, Long workId) {

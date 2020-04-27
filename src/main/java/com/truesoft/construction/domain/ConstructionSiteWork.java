@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.time.Instant;
 
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
@@ -21,12 +23,18 @@ import com.truesoft.construction.domain.enumeration.ConstructionSiteWorkStatus;
  */
 @Entity
 @Table(name = "construction_site_work")
+@IdClass(ConstructionWorkCompositeId.class)
 public class ConstructionSiteWork implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-	private ConstructionWorkCompositeId id;
+	@Id
+	@Column(name = "construction_site_id")
+	private Long constructionSiteId;
+
+	@Id
+	@Column(name = "work_id")
+	private Long workId;
 
 	@NotNull
 	@Column(name = "date_created", nullable = false)
@@ -46,15 +54,23 @@ public class ConstructionSiteWork implements Serializable {
 	private Work work;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("tenderId")
+	@JoinColumn(name = "tender_id", nullable = false)
 	private Tender tender;
 
-	public ConstructionWorkCompositeId getId() {
-		return id;
+	public Long getConstructionSiteId() {
+		return constructionSiteId;
 	}
 
-	public void setId(ConstructionWorkCompositeId id) {
-		this.id = id;
+	public void setConstructionSiteId(Long constructionSiteId) {
+		this.constructionSiteId = constructionSiteId;
+	}
+
+	public Long getWorkId() {
+		return workId;
+	}
+
+	public void setWorkId(Long workId) {
+		this.workId = workId;
 	}
 
 	public Instant getDateCreated() {

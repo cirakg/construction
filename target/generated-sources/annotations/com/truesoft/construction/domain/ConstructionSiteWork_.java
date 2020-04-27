@@ -12,16 +12,18 @@ public abstract class ConstructionSiteWork_ {
 
 	public static volatile SingularAttribute<ConstructionSiteWork, ConstructionSite> constructionSite;
 	public static volatile SingularAttribute<ConstructionSiteWork, Tender> tender;
+	public static volatile SingularAttribute<ConstructionSiteWork, Long> constructionSiteId;
 	public static volatile SingularAttribute<ConstructionSiteWork, Instant> dateCreated;
 	public static volatile SingularAttribute<ConstructionSiteWork, Work> work;
-	public static volatile SingularAttribute<ConstructionSiteWork, ConstructionWorkCompositeId> id;
+	public static volatile SingularAttribute<ConstructionSiteWork, Long> workId;
 	public static volatile SingularAttribute<ConstructionSiteWork, ConstructionSiteWorkStatus> status;
 
 	public static final String CONSTRUCTION_SITE = "constructionSite";
 	public static final String TENDER = "tender";
+	public static final String CONSTRUCTION_SITE_ID = "constructionSiteId";
 	public static final String DATE_CREATED = "dateCreated";
 	public static final String WORK = "work";
-	public static final String ID = "id";
+	public static final String WORK_ID = "workId";
 	public static final String STATUS = "status";
 
 }

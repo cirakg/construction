@@ -13,8 +13,11 @@
     -->
     <changeSet id="20200426171519-1" author="marko">
         <createTable tableName="construction_site_work">
-            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
-                <constraints primaryKey="true" nullable="false"/>
+        	 <column name="construction_site_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="work_id" type="bigint">
+                <constraints nullable="false"/>
             </column>
             <column name="date_created" type="datetime">
                 <constraints nullable="false" />
@@ -22,21 +25,12 @@
             <column name="status" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
+            <column name="tender_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <dropDefaultValue tableName="construction_site_work" columnName="date_created" columnDataType="datetime"/>
-        
-    </changeSet>
-
-    <changeSet id="20200426171519-1-2" author="marko">
-		<createTable tableName="construction_site_work_join">
-            <column name="construction_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="work_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <addPrimaryKey columnNames="construction_id, work_id" tableName="construction_site_work_join"/>
+        <addPrimaryKey columnNames="construction_site_id, work_id" tableName="construction_site_work"/>
     </changeSet>
 
     <changeSet id="20200426171519-1-data" author="marko" context="faker">

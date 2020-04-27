@@ -6,15 +6,21 @@
 	<!-- Added the constraints for entity ConstructionSiteWork. -->
 	<changeSet id="20200426171519-2" author="marko">
 
-		<addForeignKeyConstraint baseColumnNames="construction_id"
-			baseTableName="construction_site_work_join"
+		<addForeignKeyConstraint
+			baseColumnNames="construction_site_id"
+			baseTableName="construction_site_work"
 			constraintName="fk_construction_site_work_construction_site_id"
-			referencedColumnNames="id" referencedTableName="construction_site_work" />
+			referencedColumnNames="id" referencedTableName="construction_site" />
 
-		<addForeignKeyConstraint baseColumnNames="work_id"
-			baseTableName="construction_site_work_join"
+		<addForeignKeyConstraint
+			baseColumnNames="work_id" baseTableName="construction_site_work"
 			constraintName="fk_construction_site_work_work_id"
-			referencedColumnNames="id" referencedTableName="construction_site_work" />
+			referencedColumnNames="id" referencedTableName="work" />
+
+		<addForeignKeyConstraint
+			baseColumnNames="tender_id" baseTableName="construction_site_work"
+			constraintName="fk_construction_site_work_tender_id"
+			referencedColumnNames="id" referencedTableName="tender" />
 
 	</changeSet>
 </databaseChangeLog>
