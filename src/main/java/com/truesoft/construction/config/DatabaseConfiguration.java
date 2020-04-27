@@ -19,7 +19,6 @@ import liquibase.integration.spring.SpringLiquibase;
 
 @Configuration
 @EnableJpaRepositories("com.truesoft.construction.repository")
-@EnableJpaAuditing(auditorAwareRef = "springSecurityAuditorAware")
 @EnableTransactionManagement
 public class DatabaseConfiguration {
 
