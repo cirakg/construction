@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 /**
  * Embeddable class for composite key (Contruction,Work)
+ * 
  * @author marko
  *
  */
@@ -19,7 +20,7 @@ public class ConstructionWorkCompositeId implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(name = "construction_id")
-	private Long constructionId;
+	private Long constructionSiteId;
 
 	@Column(name = "work_id")
 	private Long workId;
@@ -28,18 +29,18 @@ public class ConstructionWorkCompositeId implements Serializable {
 		super();
 	}
 
-	public ConstructionWorkCompositeId(Long constructionId, Long workId) {
+	public ConstructionWorkCompositeId(Long constructionSiteId, Long workId) {
 		super();
-		this.constructionId = constructionId;
+		this.constructionSiteId = constructionSiteId;
 		this.workId = workId;
 	}
 
-	public Long getConstructionId() {
-		return constructionId;
+	public Long getConstructionSiteId() {
+		return constructionSiteId;
 	}
 
-	public void setConstructionId(Long constructionId) {
-		this.constructionId = constructionId;
+	public void setConstructionSiteId(Long constructionSiteId) {
+		this.constructionSiteId = constructionSiteId;
 	}
 
 	public Long getWorkId() {
@@ -54,7 +55,7 @@ public class ConstructionWorkCompositeId implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((constructionId == null) ? 0 : constructionId.hashCode());
+		result = prime * result + ((constructionSiteId == null) ? 0 : constructionSiteId.hashCode());
 		result = prime * result + ((workId == null) ? 0 : workId.hashCode());
 		return result;
 	}
@@ -68,10 +69,10 @@ public class ConstructionWorkCompositeId implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ConstructionWorkCompositeId other = (ConstructionWorkCompositeId) obj;
-		if (constructionId == null) {
-			if (other.constructionId != null)
+		if (constructionSiteId == null) {
+			if (other.constructionSiteId != null)
 				return false;
-		} else if (!constructionId.equals(other.constructionId))
+		} else if (!constructionSiteId.equals(other.constructionSiteId))
 			return false;
 		if (workId == null) {
 			if (other.workId != null)

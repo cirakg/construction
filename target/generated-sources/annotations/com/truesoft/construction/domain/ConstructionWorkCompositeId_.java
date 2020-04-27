@@ -8,10 +8,10 @@ import javax.persistence.metamodel.StaticMetamodel;
 @StaticMetamodel(ConstructionWorkCompositeId.class)
 public abstract class ConstructionWorkCompositeId_ {
 
-	public static volatile SingularAttribute<ConstructionWorkCompositeId, Long> constructionId;
+	public static volatile SingularAttribute<ConstructionWorkCompositeId, Long> constructionSiteId;
 	public static volatile SingularAttribute<ConstructionWorkCompositeId, Long> workId;
 
-	public static final String CONSTRUCTION_ID = "constructionId";
+	public static final String CONSTRUCTION_SITE_ID = "constructionSiteId";
 	public static final String WORK_ID = "workId";
 
 }

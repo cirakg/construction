@@ -1,14 +1,15 @@
 package com.truesoft.construction.repository;
 
-import com.truesoft.construction.domain.ConstructionSiteWork;
-
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.truesoft.construction.domain.ConstructionSiteWork;
+import com.truesoft.construction.domain.ConstructionWorkCompositeId;
+
 /**
- * Spring Data  repository for the ConstructionSiteWork entity.
+ * Spring Data repository for the ConstructionSiteWork entity.
  */
-@SuppressWarnings("unused")
 @Repository
-public interface ConstructionSiteWorkRepository extends JpaRepository<ConstructionSiteWork, Long> {
+public interface ConstructionSiteWorkRepository
+		extends JpaRepository<ConstructionSiteWork, ConstructionWorkCompositeId> {
 }
