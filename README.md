@@ -6,10 +6,9 @@ precondition: You need to have MySQL database running on port 3306 and with empt
 			  Username and password for MySQL should be root/root, otherwise you can change your connection details in application-dev.yml file
 
 
-STEP1: run maven install in the root project folder. This will build the project and run integration tests.
+(optional): run maven install in the root project folder. This will build the project and run integration tests.
 You can see the test execution details in the generated target folder after build passes.
 
-STEP2:
 To start your application in the dev profile, run:
 
     ./mvnw
