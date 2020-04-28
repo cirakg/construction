@@ -1,10 +1,20 @@
 package com.truesoft.construction.web.rest;
 
-import com.truesoft.construction.ConstructionApp;
-import com.truesoft.construction.domain.ConstructionSiteWork;
-import com.truesoft.construction.domain.ConstructionSite;
-import com.truesoft.construction.repository.ConstructionSiteWorkRepository;
-import com.truesoft.construction.repository.ConstructionSiteRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
+import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,27 +22,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import com.truesoft.construction.ConstructionApp;
+import com.truesoft.construction.domain.ConstructionSite;
+import com.truesoft.construction.domain.ConstructionSiteWork;
+import com.truesoft.construction.domain.Work;
 import com.truesoft.construction.domain.enumeration.ConstructionSiteWorkStatus;
+import com.truesoft.construction.repository.ConstructionSiteRepository;
+import com.truesoft.construction.repository.ConstructionSiteWorkRepository;
+import com.truesoft.construction.repository.WorkRepository;
 /**
  * Integration tests for the {@link ConstructionSiteWorkResource} REST controller.
  */
 @SpringBootTest(classes = ConstructionApp.class)
 
 @AutoConfigureMockMvc
-@WithMockUser
 public class ConstructionSiteWorkResourceIT {
 
     private static final Instant DEFAULT_DATE_CREATED = Instant.ofEpochMilli(0L);
@@ -45,6 +51,8 @@ public class ConstructionSiteWorkResourceIT {
     private ConstructionSiteWorkRepository constructionSiteWorkRepository;
     @Autowired
     private ConstructionSiteRepository constructionSiteRepository;
+    @Autowired
+    private WorkRepository workRepository;
 
     @Autowired
     private EntityManager em;
@@ -54,54 +62,15 @@ public class ConstructionSiteWorkResourceIT {
 
     private ConstructionSiteWork constructionSiteWork;
 
-    /**
-     * Create an entity for this test.
-     *
-     * This is a static method, as tests for other entities might also need it,
-     * if they test an entity which requires the current entity.
-     */
-    public static ConstructionSiteWork createEntity(EntityManager em) {
-        ConstructionSiteWork constructionSiteWork = new ConstructionSiteWork()
-            .dateCreated(DEFAULT_DATE_CREATED)
-            .status(DEFAULT_STATUS);
-        // Add required entity
-        ConstructionSite constructionSite;
-        if (TestUtil.findAll(em, ConstructionSite.class).isEmpty()) {
-            constructionSite = ConstructionSiteResourceIT.createEntity(em);
-            em.persist(constructionSite);
-            em.flush();
-        } else {
-            constructionSite = TestUtil.findAll(em, ConstructionSite.class).get(0);
-        }
-        constructionSiteWork.setConstructionSite(constructionSite);
-        return constructionSiteWork;
-    }
-    /**
-     * Create an updated entity for this test.
-     *
-     * This is a static method, as tests for other entities might also need it,
-     * if they test an entity which requires the current entity.
-     */
-    public static ConstructionSiteWork createUpdatedEntity(EntityManager em) {
-        ConstructionSiteWork constructionSiteWork = new ConstructionSiteWork()
-            .dateCreated(UPDATED_DATE_CREATED)
-            .status(UPDATED_STATUS);
-        // Add required entity
-        ConstructionSite constructionSite;
-        if (TestUtil.findAll(em, ConstructionSite.class).isEmpty()) {
-            constructionSite = ConstructionSiteResourceIT.createUpdatedEntity(em);
-            em.persist(constructionSite);
-            em.flush();
-        } else {
-            constructionSite = TestUtil.findAll(em, ConstructionSite.class).get(0);
-        }
-        constructionSiteWork.setConstructionSite(constructionSite);
-        return constructionSiteWork;
-    }
-
     @BeforeEach
     public void initTest() {
-        constructionSiteWork = createEntity(em);
+    	
+    	ConstructionSite cs = new ConstructionSite("cs1", "cs1 desc");
+    	constructionSiteRepository.save(cs);
+
+    	Work w = new Work("test work");
+    	workRepository.save(w);
+    	
     }
 
     @Test
