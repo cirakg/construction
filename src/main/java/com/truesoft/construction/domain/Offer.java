@@ -1,148 +1,165 @@
 package com.truesoft.construction.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import javax.persistence.*;
-import javax.validation.constraints.*;
-
 import java.io.Serializable;
-import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.truesoft.construction.domain.enumeration.TenderOfferStatus;
 
 /**
- * A Offer.
+ * A tender Offer.
  */
 @Entity
 @Table(name = "offer")
 public class Offer implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	private Offer() {
+		super();
+	}
 
-    @NotNull
-    @Column(name = "price", nullable = false)
-    private Double price;
+	public Offer(@NotNull Double price, String description, @NotNull Tender tender, @NotNull Bidder bidder) {
+		super();
+		this.price = price;
+		this.description = description;
+		this.tender = tender;
+		this.bidder = bidder;
+		this.status = TenderOfferStatus.PENDING;
+	}
 
-    @Column(name = "description")
-    private String description;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private TenderOfferStatus status;
+	@NotNull
+	@Column(name = "price", nullable = false)
+	private Double price;
 
-    @ManyToOne(optional = false)
-    @NotNull
-    @JsonIgnoreProperties("offers")
-    private Tender tender;
+	@Column(name = "description")
+	private String description;
 
-    @ManyToOne(optional = false)
-    @NotNull
-    @JsonIgnoreProperties("offers")
-    private Bidder bidder;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status", nullable = false)
+	private TenderOfferStatus status;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-    public Long getId() {
-        return id;
-    }
+	@ManyToOne(optional = false)
+	@NotNull
+	@JsonIgnoreProperties("offers")
+	private Tender tender;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@ManyToOne(optional = false)
+	@NotNull
+	@JsonIgnoreProperties("offers")
+	private Bidder bidder;
 
-    public Double getPrice() {
-        return price;
-    }
+	// jhipster-needle-entity-add-field - JHipster will add fields here, do not
+	// remove
+	public Long getId() {
+		return id;
+	}
 
-    public Offer price(Double price) {
-        this.price = price;
-        return this;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+	public Double getPrice() {
+		return price;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public Offer price(Double price) {
+		this.price = price;
+		return this;
+	}
 
-    public Offer description(String description) {
-        this.description = description;
-        return this;
-    }
+	public void setPrice(Double price) {
+		this.price = price;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public TenderOfferStatus getStatus() {
-        return status;
-    }
+	public Offer description(String description) {
+		this.description = description;
+		return this;
+	}
 
-    public Offer status(TenderOfferStatus status) {
-        this.status = status;
-        return this;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setStatus(TenderOfferStatus status) {
-        this.status = status;
-    }
+	public TenderOfferStatus getStatus() {
+		return status;
+	}
 
-    public Tender getTender() {
-        return tender;
-    }
+	public Offer status(TenderOfferStatus status) {
+		this.status = status;
+		return this;
+	}
 
-    public Offer tender(Tender tender) {
-        this.tender = tender;
-        return this;
-    }
+	public void setStatus(TenderOfferStatus status) {
+		this.status = status;
+	}
 
-    public void setTender(Tender tender) {
-        this.tender = tender;
-    }
+	public Tender getTender() {
+		return tender;
+	}
 
-    public Bidder getBidder() {
-        return bidder;
-    }
+	public Offer tender(Tender tender) {
+		this.tender = tender;
+		return this;
+	}
 
-    public Offer bidder(Bidder bidder) {
-        this.bidder = bidder;
-        return this;
-    }
+	public void setTender(Tender tender) {
+		this.tender = tender;
+	}
 
-    public void setBidder(Bidder bidder) {
-        this.bidder = bidder;
-    }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+	public Bidder getBidder() {
+		return bidder;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Offer)) {
-            return false;
-        }
-        return id != null && id.equals(((Offer) o).id);
-    }
+	public Offer bidder(Bidder bidder) {
+		this.bidder = bidder;
+		return this;
+	}
 
-    @Override
-    public int hashCode() {
-        return 31;
-    }
+	public void setBidder(Bidder bidder) {
+		this.bidder = bidder;
+	}
+	// jhipster-needle-entity-add-getters-setters - JHipster will add getters and
+	// setters here, do not remove
 
-    @Override
-    public String toString() {
-        return "Offer{" +
-            "id=" + getId() +
-            ", price=" + getPrice() +
-            ", description='" + getDescription() + "'" +
-            ", status='" + getStatus() + "'" +
-            "}";
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Offer)) {
+			return false;
+		}
+		return id != null && id.equals(((Offer) o).id);
+	}
+
+	@Override
+	public int hashCode() {
+		return 31;
+	}
+
+	@Override
+	public String toString() {
+		return "Offer{" + "id=" + getId() + ", price=" + getPrice() + ", description='" + getDescription() + "'"
+				+ ", status='" + getStatus() + "'" + "}";
+	}
 }

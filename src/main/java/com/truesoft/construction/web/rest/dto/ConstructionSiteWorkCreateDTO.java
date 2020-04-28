@@ -2,7 +2,7 @@ package com.truesoft.construction.web.rest.dto;
 
 import java.util.List;
 
-public class ConstructionSiteWorkCreateDTO extends UIRequest {
+public class ConstructionSiteWorkCreateDTO extends UIRequestIssuer {
 
 	private List<Long> workIds;
 

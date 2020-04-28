@@ -6,7 +6,7 @@ import javax.validation.constraints.NotEmpty;
 
 import com.truesoft.construction.domain.ConstructionWorkCompositeId;
 
-public class TenderCreateDTO extends UIRequest {
+public class TenderCreateDTO extends UIRequestIssuer {
 
 	@NotEmpty(message = "Please provide a name")
 	private String name;

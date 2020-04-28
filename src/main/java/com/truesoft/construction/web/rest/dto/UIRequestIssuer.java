@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
  * @author marko
  *
  */
-public abstract class UIRequest {
+public abstract class UIRequestIssuer {
 
 	@NotNull
 	protected Long issuerId;

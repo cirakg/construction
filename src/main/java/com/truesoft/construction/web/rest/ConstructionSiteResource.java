@@ -67,7 +67,7 @@ public class ConstructionSiteResource {
 	 * @throws BadRequestException
 	 */
 	@PostMapping("/construction-site")
-	public ResponseEntity<ConstructionSite> createConstructionSiteWork(
+	public ResponseEntity<ConstructionSite> createConstructionSite(
 			@Valid @RequestBody ConstructionSiteCreateDTO constructionSiteCreateDTO)
 			throws URISyntaxException, BadRequestException {
 		log.debug("REST request to create construction site : {}", constructionSiteCreateDTO);

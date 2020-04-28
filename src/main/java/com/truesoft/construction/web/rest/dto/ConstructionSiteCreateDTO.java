@@ -2,7 +2,7 @@ package com.truesoft.construction.web.rest.dto;
 
 import javax.validation.constraints.NotEmpty;
 
-public class ConstructionSiteCreateDTO extends UIRequest {
+public class ConstructionSiteCreateDTO extends UIRequestIssuer {
 
 	@NotEmpty(message = "Please provide a name")
 	private String name;
