@@ -3,13 +3,13 @@ package com.truesoft.construction.web.rest.dto;
 import javax.validation.constraints.NotNull;
 
 /**
- * Abstract class for all client requests used for sending issuer details (since
+ * Class for all client requests used for sending issuer details (since
  * no auth implemented on BE)
  * 
  * @author marko
  *
  */
-public abstract class UIRequestIssuer {
+public class UIRequestIssuer {
 
 	@NotNull
 	protected Long issuerId;

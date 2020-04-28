@@ -45,18 +45,5 @@
 			constraintName="fk_tender_issuer_id"
 			referencedColumnNames="id" referencedTableName="issuer" />
     </changeSet>
-    <changeSet id="20200426175311-1-data" author="jhipster" context="faker">
-        <loadData
-                  file="config/liquibase/fake-data/tender.csv"
-                  separator=";"
-                  tableName="tender">
-            <column name="id" type="numeric"/>
-            <column name="name" type="string"/>
-            <column name="description" type="string"/>
-            <column name="date_created" type="datetime"/>
-            <column name="date_started" type="datetime"/>
-            <column name="status" type="string"/>
-        </loadData>
-    </changeSet>
 
 </databaseChangeLog>

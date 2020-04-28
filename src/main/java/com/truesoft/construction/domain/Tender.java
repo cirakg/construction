@@ -2,8 +2,6 @@ package com.truesoft.construction.domain;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -54,11 +51,6 @@ public class Tender implements Serializable {
 	@ManyToOne
 	private Issuer issuer;
 
-	@OneToMany(mappedBy = "tender")
-	private Set<ConstructionSiteWork> constructionSiteWorks = new HashSet<>();
-
-	// jhipster-needle-entity-add-field - JHipster will add fields here, do not
-	// remove
 	public Long getId() {
 		return id;
 	}
@@ -139,21 +131,6 @@ public class Tender implements Serializable {
 	public void setIssuer(Issuer issuer) {
 		this.issuer = issuer;
 	}
-
-	public Set<ConstructionSiteWork> getConstructionSiteWorks() {
-		return constructionSiteWorks;
-	}
-
-	public Tender constructionSiteWorks(Set<ConstructionSiteWork> constructionSiteWorks) {
-		this.constructionSiteWorks = constructionSiteWorks;
-		return this;
-	}
-
-	public void setConstructionSiteWorks(Set<ConstructionSiteWork> constructionSiteWorks) {
-		this.constructionSiteWorks = constructionSiteWorks;
-	}
-	// jhipster-needle-entity-add-getters-setters - JHipster will add getters and
-	// setters here, do not remove
 
 	@Override
 	public boolean equals(Object o) {

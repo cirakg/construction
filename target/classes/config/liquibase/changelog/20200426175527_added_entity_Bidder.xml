@@ -26,7 +26,6 @@
     <changeSet id="20200426175527-1-relations" author="jhipster">
 
     </changeSet>
-    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
 
     <!--
         Load sample data generated with Faker.js

@@ -33,15 +33,4 @@
         <addPrimaryKey columnNames="construction_site_id, work_id" tableName="construction_site_work"/>
     </changeSet>
 
-    <changeSet id="20200426171519-1-data" author="marko" context="faker">
-        <loadData
-                  file="config/liquibase/fake-data/construction_site_work.csv"
-                  separator=";"
-                  tableName="construction_site_work">
-            <column name="id" type="numeric"/>
-            <column name="date_created" type="datetime"/>
-            <column name="status" type="string"/>
-        </loadData>
-    </changeSet>
-
 </databaseChangeLog>

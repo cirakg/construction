@@ -11,9 +11,6 @@ public class OfferDTO extends UIRequestBidder {
 	@NotNull(message = "Please provide a price")
 	private Double price;
 
-	@NotNull(message = "Please provide a valid tenderId")
-	private Long tenderId;
-
 	public String getDescription() {
 		return description;
 	}
@@ -29,15 +26,5 @@ public class OfferDTO extends UIRequestBidder {
 	public void setPrice(Double price) {
 		this.price = price;
 	}
-
-	public Long getTenderId() {
-		return tenderId;
-	}
-
-	public void setTenderId(Long tenderId) {
-		this.tenderId = tenderId;
-	}
-	
-	
 
 }
