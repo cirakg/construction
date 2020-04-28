@@ -1,0 +1,6 @@
+com\truesoft\construction\ArchTest.class
+com\truesoft\construction\web\rest\TestUtil$ZonedDateTimeMatcher.class
+com\truesoft\construction\web\rest\TenderResourceIT.class
+com\truesoft\construction\config\WebConfigurerTestController.class
+com\truesoft\construction\web\rest\TestUtil.class
+com\truesoft\construction\web\rest\ConstructionSiteWorkResourceIT.class

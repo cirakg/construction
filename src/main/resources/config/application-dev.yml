@@ -21,9 +21,8 @@ logging:
 
 spring:
   profiles:
-    active: dev
-    include:
-      - swagger
+    active: dev, swagger
+    include: swagger
   jackson:
     serialization:
       indent-output: true

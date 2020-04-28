@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Tender_.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Construction</a> &gt; <a href="index.source.html" class="el_package">com.truesoft.construction.domain</a> &gt; <span class="el_source">Tender_.java</span></div><h1>Tender_.java</h1><pre class="source lang-java linenums">package com.truesoft.construction.domain;
+
+import com.truesoft.construction.domain.enumeration.TenderStatus;
+import java.time.Instant;
+import javax.annotation.Generated;
+import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.StaticMetamodel;
+
+@Generated(value = &quot;org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor&quot;)
+@StaticMetamodel(Tender.class)
+<span class="nc" id="L11">public abstract class Tender_ {</span>
+
+	public static volatile SingularAttribute&lt;Tender, Instant&gt; dateCreated;
+	public static volatile SingularAttribute&lt;Tender, Instant&gt; dateStarted;
+	public static volatile SingularAttribute&lt;Tender, String&gt; name;
+	public static volatile SingularAttribute&lt;Tender, String&gt; description;
+	public static volatile SingularAttribute&lt;Tender, Long&gt; id;
+	public static volatile SingularAttribute&lt;Tender, Issuer&gt; issuer;
+	public static volatile SingularAttribute&lt;Tender, TenderStatus&gt; status;
+
+	public static final String DATE_CREATED = &quot;dateCreated&quot;;
+	public static final String DATE_STARTED = &quot;dateStarted&quot;;
+	public static final String NAME = &quot;name&quot;;
+	public static final String DESCRIPTION = &quot;description&quot;;
+	public static final String ID = &quot;id&quot;;
+	public static final String ISSUER = &quot;issuer&quot;;
+	public static final String STATUS = &quot;status&quot;;
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

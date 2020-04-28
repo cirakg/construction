@@ -1,14 +1,13 @@
 package com.truesoft.construction.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.truesoft.construction.domain.Bidder;
 import com.truesoft.construction.domain.Issuer;
-import com.truesoft.construction.domain.Tender;
 import com.truesoft.construction.repository.BidderRepository;
 import com.truesoft.construction.repository.IssuerRepository;
-
-import io.undertow.util.BadRequestException;
 
 @Service
 /**
@@ -32,11 +31,10 @@ public class AuthServiceStub {
 	 * 
 	 * @param issuerId
 	 * @return
-	 * @throws BadRequestException
 	 */
-	public Issuer getIssuer(Long issuerId) throws BadRequestException {
+	public Issuer getIssuer(Long issuerId){
 		return issuerRepository.findById(issuerId)
-				.orElseThrow(() -> new BadRequestException("Issuer with id: " + issuerId + " is not present."));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Issuer with id: " + issuerId + " is not present."));
 	}
 
 	/**
@@ -45,11 +43,10 @@ public class AuthServiceStub {
 	 * 
 	 * @param bidderId
 	 * @return
-	 * @throws BadRequestException
 	 */
-	public Bidder getBidder(Long bidderId) throws BadRequestException {
+	public Bidder getBidder(Long bidderId) {
 		return bidderRepository.findById(bidderId)
-				.orElseThrow(() -> new BadRequestException("Bidder with id: " + bidderId + " is not present."));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bidder with id: " + bidderId + " is not present."));
 	}
 	
 }

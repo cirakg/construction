@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Work.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Construction</a> &gt; <a href="index.source.html" class="el_package">com.truesoft.construction.domain</a> &gt; <span class="el_source">Work.java</span></div><h1>Work.java</h1><pre class="source lang-java linenums">package com.truesoft.construction.domain;
+
+import java.io.Serializable;
+import java.time.Instant;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+/**
+ * A Work.
+ */
+@Entity
+@Table(name = &quot;work&quot;)
+public class Work implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private Work() {
+		super();
+	}
+
+<span class="nc" id="L27">	public Work(String description) {</span>
+<span class="nc" id="L28">		this.description = description;</span>
+<span class="nc" id="L29">		this.dateCreated = Instant.now();</span>
+<span class="nc" id="L30">	}</span>
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@NotNull
+	@Column(name = &quot;description&quot;, nullable = false)
+	private String description;
+
+	@NotNull
+	@Column(name = &quot;date_created&quot;, nullable = false)
+	private Instant dateCreated;
+
+	public Long getId() {
+<span class="nc" id="L45">		return id;</span>
+	}
+
+	public String getDescription() {
+<span class="nc" id="L49">		return description;</span>
+	}
+
+	public Instant getDateCreated() {
+<span class="nc" id="L53">		return dateCreated;</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L58">		return &quot;Work{&quot; + &quot;id=&quot; + getId() + &quot;, description='&quot; + getDescription() + &quot;'&quot; + &quot;, dateCreated='&quot;</span>
+<span class="nc" id="L59">				+ getDateCreated() + &quot;'&quot; + &quot;}&quot;;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

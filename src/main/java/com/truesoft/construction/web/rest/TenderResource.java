@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.truesoft.construction.domain.Bidder;
 import com.truesoft.construction.domain.ConstructionSiteWork;
@@ -35,8 +37,6 @@ import com.truesoft.construction.service.AuthServiceStub;
 import com.truesoft.construction.service.TenderService;
 import com.truesoft.construction.web.rest.dto.OfferDTO;
 import com.truesoft.construction.web.rest.dto.TenderCreateDTO;
-
-import io.undertow.util.BadRequestException;
 
 /**
  * REST controller for managing {@link com.truesoft.construction.domain.Tender}.
@@ -72,12 +72,11 @@ public class TenderResource {
 	 * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
 	 *         body the new tender
 	 * @throws URISyntaxException
-	 * @throws BadRequestException
 	 */
 	@PostMapping("/tender")
 	@Transactional
-	public ResponseEntity<Tender> createTender(@Valid @RequestBody TenderCreateDTO tenderCreateDTO)
-			throws URISyntaxException, BadRequestException {
+	public ResponseEntity<Object> createTender(@Valid @RequestBody TenderCreateDTO tenderCreateDTO)
+			throws URISyntaxException {
 		log.debug("REST request to create tender : {}", tenderCreateDTO);
 
 		List<ConstructionWorkCompositeId> constructionSiteWorkIds = tenderCreateDTO.getConstructionSiteWorkIds();
@@ -89,7 +88,8 @@ public class TenderResource {
 
 		for (ConstructionWorkCompositeId id : constructionSiteWorkIds) {
 			ConstructionSiteWork work = constructionSiteWorkRepository.findById(id)
-					.orElseThrow(() -> new BadRequestException("Work with id: " + id + " is not present."));
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+							"Work with id: " + id + " is not present."));
 
 			work.setTender(tender);
 			constructionSiteWorkRepository.save(work);
@@ -104,11 +104,9 @@ public class TenderResource {
 	 * 
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
 	 *         of tenders in body.
-	 * @throws BadRequestException
 	 */
 	@GetMapping("/tender")
-	public ResponseEntity<List<Tender>> getAllTenders(@RequestParam(value = "issuerId") @NotNull Long issuerId)
-			throws BadRequestException {
+	public ResponseEntity<List<Tender>> getAllTenders(@RequestParam(value = "issuerId") @NotNull Long issuerId) {
 		log.debug("REST request to get all tenders for issuer: " + issuerId);
 		Issuer issuer = authServiceStub.getIssuer(issuerId);
 		return ResponseEntity.ok(tenderRepository.findAllByIssuer(issuer));
@@ -121,17 +119,17 @@ public class TenderResource {
 	 * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
 	 *         body the new offer
 	 * @throws URISyntaxException
-	 * @throws BadRequestException
 	 */
 	@PostMapping("/tender/{tenderId}/offer")
 	public ResponseEntity<Offer> createOffer(@PathVariable("tenderId") @NotNull Long tenderId,
-			@Valid @RequestBody OfferDTO offerDTO) throws URISyntaxException, BadRequestException {
+			@Valid @RequestBody OfferDTO offerDTO) throws URISyntaxException {
 		log.debug("REST request to accept tender offer: {}", offerDTO);
 
 		Tender tender = getTender(tenderId);
 
 		if (tender.getStatus() != TenderStatus.ACTIVE) {
-			throw new BadRequestException("Tender with id: " + tenderId + " is not active.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Tender with id: " + tenderId + " is not active.");
 		}
 
 		Bidder bidder = authServiceStub.getBidder(offerDTO.getBidderId());
@@ -147,30 +145,31 @@ public class TenderResource {
 	 * @param OfferDTO the tender offer to create.
 	 * 
 	 * @throws URISyntaxException
-	 * @throws BadRequestException
 	 */
 	@PutMapping("/tender/{tenderId}/offer/{offerId}")
 	public ResponseEntity<Offer> acceptOffer(@PathVariable("offerId") @NotNull Long offerId,
-			@RequestParam("issuerId") Long issuerId) throws URISyntaxException, BadRequestException {
+			@RequestParam("issuerId") Long issuerId) throws URISyntaxException {
 		log.debug("REST request to accept offer: {}", offerId);
 
 		Issuer issuer = authServiceStub.getIssuer(issuerId);
 		Offer offer = offerRepository.findById(offerId)
-				.orElseThrow(() -> new BadRequestException("Offer with id: " + offerId + " is not present."));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"Offer with id: " + offerId + " is not present."));
 
 		Tender tender = offer.getTender();
 		if (tender.getStatus() != TenderStatus.ACTIVE) {
-			throw new BadRequestException("Tender with id: " + tender.getId() + " is not active.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Tender with id: " + tender.getId() + " is not active.");
 		}
 
 		if (!tender.getIssuer().getId().equals(issuer.getId())) {
-			throw new BadRequestException("You cannot accept other issuer's offer");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot accept other issuer's offer");
 		}
 
 		try {
 			tenderService.acceptTenderOffer(offer);
 		} catch (Exception e) {
-			throw new BadRequestException("Error accepting offer: " + e.getMessage());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error accepting offer: " + e.getMessage());
 		}
 
 		return ResponseEntity.accepted().build();
@@ -182,18 +181,18 @@ public class TenderResource {
 	 * 
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
 	 *         of tenders in body.
-	 * @throws BadRequestException
 	 */
 	@GetMapping("/tender/{tenderId}/offer")
 	public ResponseEntity<List<Offer>> getAllOffersForTender(@PathVariable("tenderId") @NotNull Long tenderId,
-			@RequestParam("issuerId") Long issuerId) throws BadRequestException {
+			@RequestParam("issuerId") Long issuerId) {
 		log.debug("REST request to get all offers for tender: {}", tenderId);
 
 		Issuer issuer = authServiceStub.getIssuer(issuerId);
 		Tender tender = getTender(tenderId);
 
 		if (!tender.getIssuer().getId().equals(issuer.getId())) {
-			throw new BadRequestException("Tender with id: " + tenderId + " doesn't belong to this issuer.");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Tender with id: " + tenderId + " doesn't belong to this issuer.");
 		}
 
 		List<Offer> offersByTender = offerRepository.findAllByTender(tender);
@@ -207,11 +206,10 @@ public class TenderResource {
 	 *
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
 	 *         of offers in body.
-	 * @throws BadRequestException
 	 */
 	@GetMapping("/tender/bidder/{bidderId}/offer")
 	public ResponseEntity<List<Offer>> getAllOffersForBidder(@PathVariable("bidderId") @NotNull Long bidderId,
-			@RequestParam(required = false) Long tenderId) throws BadRequestException {
+			@RequestParam(required = false) Long tenderId) {
 		log.debug("REST request to get all offers for bidder: " + bidderId);
 
 		Bidder bidder = authServiceStub.getBidder(bidderId);
@@ -230,11 +228,10 @@ public class TenderResource {
 	 * 
 	 * @param tenderId
 	 * @return
-	 * @throws BadRequestException
 	 */
-	public Tender getTender(Long tenderId) throws BadRequestException {
-		return tenderRepository.findById(tenderId)
-				.orElseThrow(() -> new BadRequestException("Tender with id: " + tenderId + " is not present."));
+	private Tender getTender(Long tenderId) {
+		return tenderRepository.findById(tenderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				"Tender with id: " + tenderId + " is not present."));
 	}
 
 }

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Tender.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Construction</a> &gt; <a href="index.source.html" class="el_package">com.truesoft.construction.domain</a> &gt; <span class="el_source">Tender.java</span></div><h1>Tender.java</h1><pre class="source lang-java linenums">package com.truesoft.construction.domain;
+
+import java.io.Serializable;
+import java.time.Instant;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import com.truesoft.construction.domain.enumeration.TenderStatus;
+
+/**
+ * A Tender.
+ */
+@Entity
+@Table(name = &quot;tender&quot;)
+public class Tender implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	public Tender() {
+<span class="nc" id="L29">		super();</span>
+<span class="nc" id="L30">	}</span>
+
+	public Tender(@NotNull String name, String description, Issuer issuer) {
+<span class="nc" id="L33">		super();</span>
+<span class="nc" id="L34">		this.name = name;</span>
+<span class="nc" id="L35">		this.description = description;</span>
+<span class="nc" id="L36">		this.issuer = issuer;</span>
+<span class="nc" id="L37">		this.dateCreated = Instant.now();</span>
+<span class="nc" id="L38">		this.status = TenderStatus.ACTIVE;</span>
+<span class="nc" id="L39">		this.dateStarted = Instant.now(); // TODO we start the tender on creation</span>
+<span class="nc" id="L40">	}</span>
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@NotNull
+	@Column(name = &quot;name&quot;, nullable = false)
+	private String name;
+
+	@Column(name = &quot;description&quot;)
+	private String description;
+
+	@NotNull
+	@Column(name = &quot;date_created&quot;, nullable = false)
+	private Instant dateCreated;
+
+	@Column(name = &quot;date_started&quot;)
+	private Instant dateStarted;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = &quot;status&quot;, nullable = false)
+	private TenderStatus status;
+
+	@ManyToOne
+	private Issuer issuer;
+
+	public Long getId() {
+<span class="nc" id="L69">		return id;</span>
+	}
+
+	public String getName() {
+<span class="nc" id="L73">		return name;</span>
+	}
+
+	public String getDescription() {
+<span class="nc" id="L77">		return description;</span>
+	}
+
+	public Instant getDateCreated() {
+<span class="nc" id="L81">		return dateCreated;</span>
+	}
+
+	public Instant getDateStarted() {
+<span class="nc" id="L85">		return dateStarted;</span>
+	}
+
+	public TenderStatus getStatus() {
+<span class="nc" id="L89">		return status;</span>
+	}
+
+	public Issuer getIssuer() {
+<span class="nc" id="L93">		return issuer;</span>
+	}
+
+	@Override
+	public boolean equals(Object o) {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">		if (this == o) {</span>
+<span class="nc" id="L99">			return true;</span>
+		}
+<span class="nc bnc" id="L101" title="All 2 branches missed.">		if (!(o instanceof Tender)) {</span>
+<span class="nc" id="L102">			return false;</span>
+		}
+<span class="nc bnc" id="L104" title="All 4 branches missed.">		return id != null &amp;&amp; id.equals(((Tender) o).id);</span>
+	}
+
+	@Override
+	public int hashCode() {
+<span class="nc" id="L109">		return 31;</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L114">		return &quot;Tender{&quot; + &quot;id=&quot; + getId() + &quot;, name='&quot; + getName() + &quot;'&quot; + &quot;, description='&quot; + getDescription() + &quot;'&quot;</span>
+<span class="nc" id="L115">				+ &quot;, dateCreated='&quot; + getDateCreated() + &quot;'&quot; + &quot;, dateStarted='&quot; + getDateStarted() + &quot;'&quot; + &quot;, status='&quot;</span>
+<span class="nc" id="L116">				+ getStatus() + &quot;'&quot; + &quot;}&quot;;</span>
+	}
+
+	public void closeTender() {
+<span class="nc" id="L120">		this.status = TenderStatus.CLOSED;</span>
+<span class="nc" id="L121">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

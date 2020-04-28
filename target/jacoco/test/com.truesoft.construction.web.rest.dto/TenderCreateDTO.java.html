@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TenderCreateDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Construction</a> &gt; <a href="index.source.html" class="el_package">com.truesoft.construction.web.rest.dto</a> &gt; <span class="el_source">TenderCreateDTO.java</span></div><h1>TenderCreateDTO.java</h1><pre class="source lang-java linenums">package com.truesoft.construction.web.rest.dto;
+
+import java.util.List;
+
+import javax.validation.constraints.NotEmpty;
+
+import com.truesoft.construction.domain.ConstructionWorkCompositeId;
+
+<span class="nc" id="L9">public class TenderCreateDTO extends UIRequestIssuer {</span>
+
+	@NotEmpty(message = &quot;Please provide a name&quot;)
+	private String name;
+	@NotEmpty(message = &quot;Please provide a description&quot;)
+	private String description;
+	@NotEmpty
+	private List&lt;ConstructionWorkCompositeId&gt; constructionSiteWorkIds;
+
+	public String getName() {
+<span class="nc" id="L19">		return name;</span>
+	}
+
+	public void setName(String name) {
+<span class="nc" id="L23">		this.name = name;</span>
+<span class="nc" id="L24">	}</span>
+
+	public String getDescription() {
+<span class="nc" id="L27">		return description;</span>
+	}
+
+	public void setDescription(String description) {
+<span class="nc" id="L31">		this.description = description;</span>
+<span class="nc" id="L32">	}</span>
+
+	public List&lt;ConstructionWorkCompositeId&gt; getConstructionSiteWorkIds() {
+<span class="nc" id="L35">		return constructionSiteWorkIds;</span>
+	}
+
+	public void setConstructionSiteWorkIds(List&lt;ConstructionWorkCompositeId&gt; constructionSiteWorkIds) {
+<span class="nc" id="L39">		this.constructionSiteWorkIds = constructionSiteWorkIds;</span>
+<span class="nc" id="L40">	}</span>
+
+	public Long getIssuerId() {
+<span class="nc" id="L43">		return issuerId;</span>
+	}
+
+	public void setIssuerId(Long issuerId) {
+<span class="nc" id="L47">		this.issuerId = issuerId;</span>
+<span class="nc" id="L48">	}</span>
+
+	@Override
+	public String toString() {
+<span class="nc" id="L52">		return &quot;TenderCreateDTO [name=&quot; + name + &quot;, description=&quot; + description + &quot;, constructionSiteWorkIds=&quot;</span>
+				+ constructionSiteWorkIds + &quot;, issuerId=&quot; + issuerId + &quot;]&quot;;
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

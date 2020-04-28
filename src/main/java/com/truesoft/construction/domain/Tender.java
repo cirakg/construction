@@ -25,7 +25,7 @@ public class Tender implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Tender() {
+	public Tender() {
 		super();
 	}
 

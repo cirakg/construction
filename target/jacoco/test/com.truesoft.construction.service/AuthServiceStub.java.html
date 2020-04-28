@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthServiceStub.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Construction</a> &gt; <a href="index.source.html" class="el_package">com.truesoft.construction.service</a> &gt; <span class="el_source">AuthServiceStub.java</span></div><h1>AuthServiceStub.java</h1><pre class="source lang-java linenums">package com.truesoft.construction.service;
+
+import org.springframework.stereotype.Service;
+
+import com.truesoft.construction.domain.Bidder;
+import com.truesoft.construction.domain.Issuer;
+import com.truesoft.construction.domain.Tender;
+import com.truesoft.construction.repository.BidderRepository;
+import com.truesoft.construction.repository.IssuerRepository;
+
+import io.undertow.util.BadRequestException;
+
+@Service
+/**
+ * Stub class for returning users (issuers, bidders), should be changed with Spring auth manager after security implemented
+ * @author marko
+ *
+ */
+public class AuthServiceStub {
+	
+	private final IssuerRepository issuerRepository;
+	private final BidderRepository bidderRepository;
+	
+<span class="nc" id="L24">	public AuthServiceStub(IssuerRepository issuerRepository, BidderRepository bidderRepository) {</span>
+<span class="nc" id="L25">		this.issuerRepository = issuerRepository;</span>
+<span class="nc" id="L26">		this.bidderRepository = bidderRepository;</span>
+<span class="nc" id="L27">	}</span>
+
+	/**
+	 * Helper method to get issuer from db based on id. This should be changed to
+	 * get it from spring auth manager
+	 * 
+	 * @param issuerId
+	 * @return
+	 * @throws BadRequestException
+	 */
+	public Issuer getIssuer(Long issuerId) throws BadRequestException {
+<span class="nc" id="L38">		return issuerRepository.findById(issuerId)</span>
+<span class="nc" id="L39">				.orElseThrow(() -&gt; new BadRequestException(&quot;Issuer with id: &quot; + issuerId + &quot; is not present.&quot;));</span>
+	}
+
+	/**
+	 * Helper method to get bidder from db based on id. This should be changed to
+	 * get it from spring auth manager
+	 * 
+	 * @param bidderId
+	 * @return
+	 * @throws BadRequestException
+	 */
+	public Bidder getBidder(Long bidderId) throws BadRequestException {
+<span class="nc" id="L51">		return bidderRepository.findById(bidderId)</span>
+<span class="nc" id="L52">				.orElseThrow(() -&gt; new BadRequestException(&quot;Bidder with id: &quot; + bidderId + &quot; is not present.&quot;));</span>
+	}
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

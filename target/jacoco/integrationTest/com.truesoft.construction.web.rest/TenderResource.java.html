@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TenderResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Construction</a> &gt; <a href="index.source.html" class="el_package">com.truesoft.construction.web.rest</a> &gt; <span class="el_source">TenderResource.java</span></div><h1>TenderResource.java</h1><pre class="source lang-java linenums">package com.truesoft.construction.web.rest;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.truesoft.construction.domain.Bidder;
+import com.truesoft.construction.domain.ConstructionSiteWork;
+import com.truesoft.construction.domain.ConstructionWorkCompositeId;
+import com.truesoft.construction.domain.Issuer;
+import com.truesoft.construction.domain.Offer;
+import com.truesoft.construction.domain.Tender;
+import com.truesoft.construction.domain.enumeration.TenderStatus;
+import com.truesoft.construction.repository.ConstructionSiteWorkRepository;
+import com.truesoft.construction.repository.IssuerRepository;
+import com.truesoft.construction.repository.OfferRepository;
+import com.truesoft.construction.repository.TenderRepository;
+import com.truesoft.construction.service.AuthServiceStub;
+import com.truesoft.construction.service.TenderService;
+import com.truesoft.construction.web.rest.dto.OfferDTO;
+import com.truesoft.construction.web.rest.dto.TenderCreateDTO;
+
+import io.undertow.util.BadRequestException;
+
+/**
+ * REST controller for managing {@link com.truesoft.construction.domain.Tender}.
+ */
+@RestController
+@RequestMapping(&quot;/api&quot;)
+public class TenderResource {
+
+<span class="fc" id="L48">	private final Logger log = LoggerFactory.getLogger(TenderResource.class);</span>
+
+	private final TenderService tenderService;
+	private final TenderRepository tenderRepository;
+	private final IssuerRepository issuerRepository;
+	private final ConstructionSiteWorkRepository constructionSiteWorkRepository;
+	private final AuthServiceStub authServiceStub;
+	private final OfferRepository offerRepository;
+
+	public TenderResource(TenderService tenderService, TenderRepository tenderRepository,
+			ConstructionSiteWorkRepository constructionSiteWorkRepository, IssuerRepository issuerRepository,
+<span class="fc" id="L59">			AuthServiceStub authServiceStub, OfferRepository offerRepository) {</span>
+<span class="fc" id="L60">		this.tenderRepository = tenderRepository;</span>
+<span class="fc" id="L61">		this.constructionSiteWorkRepository = constructionSiteWorkRepository;</span>
+<span class="fc" id="L62">		this.issuerRepository = issuerRepository;</span>
+<span class="fc" id="L63">		this.authServiceStub = authServiceStub;</span>
+<span class="fc" id="L64">		this.offerRepository = offerRepository;</span>
+<span class="fc" id="L65">		this.tenderService = tenderService;</span>
+<span class="fc" id="L66">	}</span>
+
+	/**
+	 * {@code POST  /tender} : Create a new tender.
+	 *
+	 * @param TenderCreateDTO the tender to create.
+	 * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
+	 *         body the new tender
+	 * @throws URISyntaxException
+	 * @throws BadRequestException
+	 */
+	@PostMapping(&quot;/tender&quot;)
+	@Transactional
+	public ResponseEntity&lt;Tender&gt; createTender(@Valid @RequestBody TenderCreateDTO tenderCreateDTO)
+			throws URISyntaxException, BadRequestException {
+<span class="fc" id="L81">		log.debug(&quot;REST request to create tender : {}&quot;, tenderCreateDTO);</span>
+
+<span class="fc" id="L83">		List&lt;ConstructionWorkCompositeId&gt; constructionSiteWorkIds = tenderCreateDTO.getConstructionSiteWorkIds();</span>
+
+<span class="fc" id="L85">		Issuer issuer = authServiceStub.getIssuer(tenderCreateDTO.getIssuerId());</span>
+
+<span class="fc" id="L87">		Tender tender = new Tender(tenderCreateDTO.getName(), tenderCreateDTO.getDescription(), issuer);</span>
+<span class="fc" id="L88">		tender = tenderRepository.save(tender);</span>
+
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (ConstructionWorkCompositeId id : constructionSiteWorkIds) {</span>
+<span class="fc" id="L91">			ConstructionSiteWork work = constructionSiteWorkRepository.findById(id)</span>
+<span class="pc" id="L92">					.orElseThrow(() -&gt; new BadRequestException(&quot;Work with id: &quot; + id + &quot; is not present.&quot;));</span>
+
+<span class="fc" id="L94">			work.setTender(tender);</span>
+<span class="fc" id="L95">			constructionSiteWorkRepository.save(work);</span>
+<span class="fc" id="L96">		}</span>
+
+<span class="fc" id="L98">		return ResponseEntity.created(new URI(&quot;/api/tender/&quot; + tender.getId())).body(tender);</span>
+	}
+
+	/**
+	 * {@code GET  /tender} : get all the tenders.
+	 *
+	 * 
+	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
+	 *         of tenders in body.
+	 * @throws BadRequestException
+	 */
+	@GetMapping(&quot;/tender&quot;)
+	public ResponseEntity&lt;List&lt;Tender&gt;&gt; getAllTenders(@RequestParam(value = &quot;issuerId&quot;) @NotNull Long issuerId)
+			throws BadRequestException {
+<span class="nc" id="L112">		log.debug(&quot;REST request to get all tenders for issuer: &quot; + issuerId);</span>
+<span class="nc" id="L113">		Issuer issuer = authServiceStub.getIssuer(issuerId);</span>
+<span class="nc" id="L114">		return ResponseEntity.ok(tenderRepository.findAllByIssuer(issuer));</span>
+	}
+
+	/**
+	 * {@code POST  /tender/offer} : Create a new tender offer.
+	 *
+	 * @param OfferDTO the tender offer to create.
+	 * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
+	 *         body the new offer
+	 * @throws URISyntaxException
+	 * @throws BadRequestException
+	 */
+	@PostMapping(&quot;/tender/{tenderId}/offer&quot;)
+	public ResponseEntity&lt;Offer&gt; createOffer(@PathVariable(&quot;tenderId&quot;) @NotNull Long tenderId,
+			@Valid @RequestBody OfferDTO offerDTO) throws URISyntaxException, BadRequestException {
+<span class="fc" id="L129">		log.debug(&quot;REST request to accept tender offer: {}&quot;, offerDTO);</span>
+
+<span class="fc" id="L131">		Tender tender = getTender(tenderId);</span>
+
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">		if (tender.getStatus() != TenderStatus.ACTIVE) {</span>
+<span class="nc" id="L134">			throw new BadRequestException(&quot;Tender with id: &quot; + tenderId + &quot; is not active.&quot;);</span>
+		}
+
+<span class="fc" id="L137">		Bidder bidder = authServiceStub.getBidder(offerDTO.getBidderId());</span>
+
+<span class="fc" id="L139">		Offer offer = new Offer(offerDTO.getPrice(), offerDTO.getDescription(), tender, bidder);</span>
+<span class="fc" id="L140">		offer = offerRepository.save(offer);</span>
+<span class="fc" id="L141">		return ResponseEntity.created(new URI(&quot;/api/offer/&quot; + offer.getId())).body(offer);</span>
+	}
+
+	/**
+	 * {@code PUT /tender/{tenderId}/offer/{offerId} : Accepts an tender offer.
+	 *
+	 * @param OfferDTO the tender offer to create.
+	 * 
+	 * @throws URISyntaxException
+	 * @throws BadRequestException
+	 */
+	@PutMapping(&quot;/tender/{tenderId}/offer/{offerId}&quot;)
+	public ResponseEntity&lt;Offer&gt; acceptOffer(@PathVariable(&quot;offerId&quot;) @NotNull Long offerId,
+			@RequestParam(&quot;issuerId&quot;) Long issuerId) throws URISyntaxException, BadRequestException {
+<span class="fc" id="L155">		log.debug(&quot;REST request to accept offer: {}&quot;, offerId);</span>
+
+<span class="fc" id="L157">		Issuer issuer = authServiceStub.getIssuer(issuerId);</span>
+<span class="fc" id="L158">		Offer offer = offerRepository.findById(offerId)</span>
+<span class="pc" id="L159">				.orElseThrow(() -&gt; new BadRequestException(&quot;Offer with id: &quot; + offerId + &quot; is not present.&quot;));</span>
+
+<span class="fc" id="L161">		Tender tender = offer.getTender();</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">		if (tender.getStatus() != TenderStatus.ACTIVE) {</span>
+<span class="nc" id="L163">			throw new BadRequestException(&quot;Tender with id: &quot; + tender.getId() + &quot; is not active.&quot;);</span>
+		}
+
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		if (!tender.getIssuer().getId().equals(issuer.getId())) {</span>
+<span class="nc" id="L167">			throw new BadRequestException(&quot;You cannot accept other issuer's offer&quot;);</span>
+		}
+
+		try {
+<span class="fc" id="L171">			tenderService.acceptTenderOffer(offer);</span>
+<span class="nc" id="L172">		} catch (Exception e) {</span>
+<span class="nc" id="L173">			throw new BadRequestException(&quot;Error accepting offer: &quot; + e.getMessage());</span>
+<span class="fc" id="L174">		}</span>
+
+<span class="fc" id="L176">		return ResponseEntity.accepted().build();</span>
+	}
+
+	/**
+	 * {@code GET /tender/{tenderId}/offer} : get all tender offers
+	 *
+	 * 
+	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
+	 *         of tenders in body.
+	 * @throws BadRequestException
+	 */
+	@GetMapping(&quot;/tender/{tenderId}/offer&quot;)
+	public ResponseEntity&lt;List&lt;Offer&gt;&gt; getAllOffersForTender(@PathVariable(&quot;tenderId&quot;) @NotNull Long tenderId,
+			@RequestParam(&quot;issuerId&quot;) Long issuerId) throws BadRequestException {
+<span class="nc" id="L190">		log.debug(&quot;REST request to get all offers for tender: {}&quot;, tenderId);</span>
+
+<span class="nc" id="L192">		Issuer issuer = authServiceStub.getIssuer(issuerId);</span>
+<span class="nc" id="L193">		Tender tender = getTender(tenderId);</span>
+
+<span class="nc bnc" id="L195" title="All 2 branches missed.">		if (!tender.getIssuer().getId().equals(issuer.getId())) {</span>
+<span class="nc" id="L196">			throw new BadRequestException(&quot;Tender with id: &quot; + tenderId + &quot; doesn't belong to this issuer.&quot;);</span>
+		}
+
+<span class="nc" id="L199">		List&lt;Offer&gt; offersByTender = offerRepository.findAllByTender(tender);</span>
+
+<span class="nc" id="L201">		return ResponseEntity.ok(offersByTender);</span>
+	}
+
+	/**
+	 * {@code GET /tender/bidder/{bidderId}} : get all the bidder offers (tendr
+	 * optional)
+	 *
+	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
+	 *         of offers in body.
+	 * @throws BadRequestException
+	 */
+	@GetMapping(&quot;/tender/bidder/{bidderId}/offer&quot;)
+	public ResponseEntity&lt;List&lt;Offer&gt;&gt; getAllOffersForBidder(@PathVariable(&quot;bidderId&quot;) @NotNull Long bidderId,
+			@RequestParam(required = false) Long tenderId) throws BadRequestException {
+<span class="nc" id="L215">		log.debug(&quot;REST request to get all offers for bidder: &quot; + bidderId);</span>
+
+<span class="nc" id="L217">		Bidder bidder = authServiceStub.getBidder(bidderId);</span>
+
+<span class="nc bnc" id="L219" title="All 2 branches missed.">		if (tenderId != null) {</span>
+<span class="nc" id="L220">			Tender tender = getTender(tenderId);</span>
+<span class="nc" id="L221">			return ResponseEntity.ok(offerRepository.findAllByBidderAndTender(bidder, tender));</span>
+		}
+
+<span class="nc" id="L224">		return ResponseEntity.ok(offerRepository.findAllByBidder(bidder));</span>
+	}
+
+	/**
+	 * Helper method to get tender from db based on id or throw bad request
+	 * exception
+	 * 
+	 * @param tenderId
+	 * @return
+	 * @throws BadRequestException
+	 */
+	public Tender getTender(Long tenderId) throws BadRequestException {
+<span class="fc" id="L236">		return tenderRepository.findById(tenderId)</span>
+<span class="pc" id="L237">				.orElseThrow(() -&gt; new BadRequestException(&quot;Tender with id: &quot; + tenderId + &quot; is not present.&quot;));</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

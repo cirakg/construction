@@ -20,8 +20,6 @@ import com.truesoft.construction.repository.WorkRepository;
 import com.truesoft.construction.service.AuthServiceStub;
 import com.truesoft.construction.web.rest.dto.WorkCreateDTO;
 
-import io.undertow.util.BadRequestException;
-
 /**
  * REST controller for managing {@link com.truesoft.construction.domain.Work}.
  */
@@ -47,11 +45,10 @@ public class WorkResource {
 	 * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
 	 *         body the new work
 	 * @throws URISyntaxException
-	 * @throws BadRequestException
 	 */
 	@PostMapping("/work")
 	public ResponseEntity<Work> createConstructionSiteWork(@Valid @RequestBody WorkCreateDTO workCreateDTO)
-			throws URISyntaxException, BadRequestException {
+			throws URISyntaxException {
 		log.debug("REST request to create work : {}", workCreateDTO);
 
 		Issuer issuer = authServiceStub.getIssuer(workCreateDTO.getIssuerId());
