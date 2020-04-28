@@ -20,6 +20,15 @@ public class Work implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private Work() {
+		super();
+	}
+
+	public Work(String description) {
+		this.description = description;
+		this.dateCreated = Instant.now();
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -32,56 +41,16 @@ public class Work implements Serializable {
 	@Column(name = "date_created", nullable = false)
 	private Instant dateCreated;
 
-	// jhipster-needle-entity-add-field - JHipster will add fields here, do not
-	// remove
 	public Long getId() {
 		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public Work description(String description) {
-		this.description = description;
-		return this;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public Instant getDateCreated() {
 		return dateCreated;
-	}
-
-	public Work dateCreated(Instant dateCreated) {
-		this.dateCreated = dateCreated;
-		return this;
-	}
-
-	public void setDateCreated(Instant dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (!(o instanceof Work)) {
-			return false;
-		}
-		return id != null && id.equals(((Work) o).id);
-	}
-
-	@Override
-	public int hashCode() {
-		return 31;
 	}
 
 	@Override

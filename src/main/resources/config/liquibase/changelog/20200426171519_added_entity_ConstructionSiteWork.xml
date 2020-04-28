@@ -26,7 +26,7 @@
                 <constraints nullable="false" />
             </column>
             <column name="tender_id" type="bigint">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </createTable>
         <dropDefaultValue tableName="construction_site_work" columnName="date_created" columnDataType="datetime"/>

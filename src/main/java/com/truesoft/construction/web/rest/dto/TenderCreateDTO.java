@@ -3,11 +3,10 @@ package com.truesoft.construction.web.rest.dto;
 import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import com.truesoft.construction.domain.ConstructionWorkCompositeId;
 
-public class TenderCreateDTO {
+public class TenderCreateDTO extends UIRequest {
 
 	@NotEmpty(message = "Please provide a name")
 	private String name;
@@ -15,8 +14,6 @@ public class TenderCreateDTO {
 	private String description;
 	@NotEmpty
 	private List<ConstructionWorkCompositeId> constructionSiteWorkIds;
-	@NotNull
-	private Long issuerId;
 
 	public String getName() {
 		return name;
@@ -48,6 +45,12 @@ public class TenderCreateDTO {
 
 	public void setIssuerId(Long issuerId) {
 		this.issuerId = issuerId;
+	}
+
+	@Override
+	public String toString() {
+		return "TenderCreateDTO [name=" + name + ", description=" + description + ", constructionSiteWorkIds="
+				+ constructionSiteWorkIds + ", issuerId=" + issuerId + "]";
 	}
 
 }

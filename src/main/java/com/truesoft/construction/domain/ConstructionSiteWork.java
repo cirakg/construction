@@ -12,7 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -40,18 +39,30 @@ public class ConstructionSiteWork implements Serializable {
 	@Column(name = "date_created", nullable = false)
 	private Instant dateCreated;
 
+	private ConstructionSiteWork() {
+		super();
+	}
+	
+	public ConstructionSiteWork(Long constructionSiteId, Long workId) {
+		super();
+		this.constructionSiteId = constructionSiteId;
+		this.workId = workId;
+		this.dateCreated = Instant.now();
+		this.status = ConstructionSiteWorkStatus.NEW;
+	}
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private ConstructionSiteWorkStatus status;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("constructionId")
-	private ConstructionSite constructionSite;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@MapsId("workId")
-	private Work work;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@MapsId("constructionId")
+//	private ConstructionSite constructionSite;
+//
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@MapsId("workId")
+//	private Work work;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tender_id", nullable = false)
@@ -61,48 +72,16 @@ public class ConstructionSiteWork implements Serializable {
 		return constructionSiteId;
 	}
 
-	public void setConstructionSiteId(Long constructionSiteId) {
-		this.constructionSiteId = constructionSiteId;
-	}
-
 	public Long getWorkId() {
 		return workId;
-	}
-
-	public void setWorkId(Long workId) {
-		this.workId = workId;
 	}
 
 	public Instant getDateCreated() {
 		return dateCreated;
 	}
 
-	public void setDateCreated(Instant dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
 	public ConstructionSiteWorkStatus getStatus() {
 		return status;
-	}
-
-	public void setStatus(ConstructionSiteWorkStatus status) {
-		this.status = status;
-	}
-
-	public ConstructionSite getConstructionSite() {
-		return constructionSite;
-	}
-
-	public void setConstructionSite(ConstructionSite constructionSite) {
-		this.constructionSite = constructionSite;
-	}
-
-	public Work getWork() {
-		return work;
-	}
-
-	public void setWork(Work work) {
-		this.work = work;
 	}
 
 	public Tender getTender() {

@@ -53,7 +53,7 @@ public class TenderResource {
 	/**
 	 * {@code POST  /tender} : Create a new tender.
 	 *
-	 * @param TenderCreateDTO the constructionSiteWork to create.
+	 * @param TenderCreateDTO the tender to create.
 	 * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
 	 *         body the new tender
 	 * @throws URISyntaxException
