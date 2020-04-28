@@ -28,15 +28,14 @@ import com.truesoft.construction.domain.Issuer;
 import com.truesoft.construction.domain.Offer;
 import com.truesoft.construction.domain.Tender;
 import com.truesoft.construction.domain.enumeration.TenderStatus;
-import com.truesoft.construction.repository.BidderRepository;
 import com.truesoft.construction.repository.ConstructionSiteWorkRepository;
 import com.truesoft.construction.repository.IssuerRepository;
 import com.truesoft.construction.repository.OfferRepository;
 import com.truesoft.construction.repository.TenderRepository;
+import com.truesoft.construction.service.AuthServiceStub;
 import com.truesoft.construction.service.TenderService;
 import com.truesoft.construction.web.rest.dto.OfferDTO;
 import com.truesoft.construction.web.rest.dto.TenderCreateDTO;
-import com.truesoft.construction.web.rest.dto.UIRequestIssuer;
 
 import io.undertow.util.BadRequestException;
 
@@ -53,16 +52,16 @@ public class TenderResource {
 	private final TenderRepository tenderRepository;
 	private final IssuerRepository issuerRepository;
 	private final ConstructionSiteWorkRepository constructionSiteWorkRepository;
-	private final BidderRepository bidderRepository;
+	private final AuthServiceStub authServiceStub;
 	private final OfferRepository offerRepository;
 
 	public TenderResource(TenderService tenderService, TenderRepository tenderRepository,
 			ConstructionSiteWorkRepository constructionSiteWorkRepository, IssuerRepository issuerRepository,
-			BidderRepository bidderRepository, OfferRepository offerRepository) {
+			AuthServiceStub authServiceStub, OfferRepository offerRepository) {
 		this.tenderRepository = tenderRepository;
 		this.constructionSiteWorkRepository = constructionSiteWorkRepository;
 		this.issuerRepository = issuerRepository;
-		this.bidderRepository = bidderRepository;
+		this.authServiceStub = authServiceStub;
 		this.offerRepository = offerRepository;
 		this.tenderService = tenderService;
 	}
@@ -118,8 +117,7 @@ public class TenderResource {
 	public ResponseEntity<List<Tender>> getAllTenders(@RequestParam(value = "issuerId") @NotNull Long issuerId)
 			throws BadRequestException {
 		log.debug("REST request to get all tenders for issuer: " + issuerId);
-		Issuer issuer = issuerRepository.findById(issuerId)
-				.orElseThrow(() -> new BadRequestException("Issuer with id: " + issuerId + " is not present."));
+		Issuer issuer = authServiceStub.getIssuer(issuerId);
 		return ResponseEntity.ok(tenderRepository.findAllByIssuer(issuer));
 	}
 
@@ -137,15 +135,13 @@ public class TenderResource {
 			@Valid @RequestBody OfferDTO offerDTO) throws URISyntaxException, BadRequestException {
 		log.debug("REST request to accept tender offer: {}", offerDTO);
 
-		Tender tender = tenderRepository.findById(tenderId)
-				.orElseThrow(() -> new BadRequestException("Tender with id: " + tenderId + " is not present."));
+		Tender tender = getTender(tenderId);
 
 		if (tender.getStatus() != TenderStatus.ACTIVE) {
 			throw new BadRequestException("Tender with id: " + tenderId + " is not active.");
 		}
 
-		Bidder bidder = bidderRepository.findById(offerDTO.getBidderId()).orElseThrow(
-				() -> new BadRequestException("Bidder with id: " + offerDTO.getBidderId() + " is not present."));
+		Bidder bidder = authServiceStub.getBidder(offerDTO.getBidderId());
 
 		Offer offer = new Offer(offerDTO.getPrice(), offerDTO.getDescription(), tender, bidder);
 		offer = offerRepository.save(offer);
@@ -165,9 +161,7 @@ public class TenderResource {
 			@RequestParam("issuerId") Long issuerId) throws URISyntaxException, BadRequestException {
 		log.debug("REST request to accept offer: {}", offerId);
 
-		Issuer issuer = issuerRepository.findById(issuerId).orElseThrow(
-				() -> new BadRequestException("Issuer with id: " + issuerId + " is not present."));
-
+		Issuer issuer = authServiceStub.getIssuer(issuerId);
 		Offer offer = offerRepository.findById(offerId)
 				.orElseThrow(() -> new BadRequestException("Offer with id: " + offerId + " is not present."));
 
@@ -198,10 +192,8 @@ public class TenderResource {
 			@RequestParam("issuerId") Long issuerId) throws BadRequestException {
 		log.debug("REST request to get all offers for tender: {}", tenderId);
 
-		Issuer issuer = issuerRepository.findById(issuerId)
-				.orElseThrow(() -> new BadRequestException("Issuer with id: " + issuerId + " is not present."));
-		Tender tender = tenderRepository.findById(tenderId)
-				.orElseThrow(() -> new BadRequestException("Tender with id: " + tenderId + " is not present."));
+		Issuer issuer = authServiceStub.getIssuer(issuerId);
+		Tender tender = getTender(tenderId);
 
 		if (!tender.getIssuer().getId().equals(issuer.getId())) {
 			throw new BadRequestException("Tender with id: " + tenderId + " doesn't belong to this issuer.");
@@ -224,16 +216,28 @@ public class TenderResource {
 	public ResponseEntity<List<Offer>> getAllOffersForBidder(@PathVariable("bidderId") @NotNull Long bidderId,
 			@RequestParam(required = false) Long tenderId) throws BadRequestException {
 		log.debug("REST request to get all offers for bidder: " + bidderId);
-		Bidder bidder = bidderRepository.findById(bidderId)
-				.orElseThrow(() -> new BadRequestException("Bidder with id: " + bidderId + " is not present."));
+
+		Bidder bidder = authServiceStub.getBidder(bidderId);
 
 		if (tenderId != null) {
-			Tender tender = tenderRepository.findById(tenderId)
-					.orElseThrow(() -> new BadRequestException("Tender with id: " + tenderId + " is not present."));
+			Tender tender = getTender(tenderId);
 			return ResponseEntity.ok(offerRepository.findAllByBidderAndTender(bidder, tender));
 		}
 
 		return ResponseEntity.ok(offerRepository.findAllByBidder(bidder));
+	}
+
+	/**
+	 * Helper method to get tender from db based on id or throw bad request
+	 * exception
+	 * 
+	 * @param tenderId
+	 * @return
+	 * @throws BadRequestException
+	 */
+	public Tender getTender(Long tenderId) throws BadRequestException {
+		return tenderRepository.findById(tenderId)
+				.orElseThrow(() -> new BadRequestException("Tender with id: " + tenderId + " is not present."));
 	}
 
 }

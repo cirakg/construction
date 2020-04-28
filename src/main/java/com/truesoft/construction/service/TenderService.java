@@ -33,7 +33,6 @@ public class TenderService {
 		}
 
 		offer.setStatus(TenderOfferStatus.ACCEPTED);
-		offer.getTender().setStatus(TenderStatus.CLOSED);
 		offer = offerRepository.save(offer);
 	 	offer.getTender().setStatus(TenderStatus.CLOSED);
 		tenderRepository.save(offer.getTender());

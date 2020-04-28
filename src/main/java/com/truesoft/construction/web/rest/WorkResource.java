@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.truesoft.construction.domain.Issuer;
 import com.truesoft.construction.domain.Work;
-import com.truesoft.construction.repository.IssuerRepository;
 import com.truesoft.construction.repository.WorkRepository;
+import com.truesoft.construction.service.AuthServiceStub;
 import com.truesoft.construction.web.rest.dto.WorkCreateDTO;
 
 import io.undertow.util.BadRequestException;
@@ -32,12 +32,12 @@ public class WorkResource {
 
 	private final Logger log = LoggerFactory.getLogger(WorkResource.class);
 
-	private final IssuerRepository issuerRepository;
+	private final AuthServiceStub authServiceStub;
 	private final WorkRepository workRepository;
 
-	public WorkResource(WorkRepository workRepository, IssuerRepository issuerRepository) {
+	public WorkResource(WorkRepository workRepository, AuthServiceStub authServiceStub) {
 		this.workRepository = workRepository;
-		this.issuerRepository = issuerRepository;
+		this.authServiceStub = authServiceStub;
 	}
 
 	/**
@@ -54,8 +54,7 @@ public class WorkResource {
 			throws URISyntaxException, BadRequestException {
 		log.debug("REST request to create work : {}", workCreateDTO);
 
-		Issuer issuer = issuerRepository.findById(workCreateDTO.getIssuerId()).orElseThrow(
-				() -> new BadRequestException("Issuer with id: " + workCreateDTO.getIssuerId() + " is not present."));
+		Issuer issuer = authServiceStub.getIssuer(workCreateDTO.getIssuerId());
 
 		Work work = new Work(workCreateDTO.getDescription());
 		work = workRepository.save(work);

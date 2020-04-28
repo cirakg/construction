@@ -25,8 +25,8 @@ import com.truesoft.construction.domain.Issuer;
 import com.truesoft.construction.domain.Work;
 import com.truesoft.construction.repository.ConstructionSiteRepository;
 import com.truesoft.construction.repository.ConstructionSiteWorkRepository;
-import com.truesoft.construction.repository.IssuerRepository;
 import com.truesoft.construction.repository.WorkRepository;
+import com.truesoft.construction.service.AuthServiceStub;
 import com.truesoft.construction.web.rest.dto.ConstructionSiteCreateDTO;
 import com.truesoft.construction.web.rest.dto.ConstructionSiteWorkCreateDTO;
 
@@ -43,18 +43,18 @@ public class ConstructionSiteResource {
 
 	private final Logger log = LoggerFactory.getLogger(ConstructionSiteResource.class);
 
-	private final IssuerRepository issuerRepository;
 	private final ConstructionSiteRepository constructionSiteRepository;
 	private final WorkRepository workRepository;
 	private final ConstructionSiteWorkRepository constructionSiteWorkRepository;
-	
+	private final AuthServiceStub authServiceStub;
 
 	public ConstructionSiteResource(ConstructionSiteRepository constructionSiteRepository,
-			IssuerRepository issuerRepository, WorkRepository workRepository, ConstructionSiteWorkRepository constructionSiteWorkRepository) {
+			WorkRepository workRepository, ConstructionSiteWorkRepository constructionSiteWorkRepository,
+			AuthServiceStub authServiceStub) {
 		this.constructionSiteRepository = constructionSiteRepository;
-		this.issuerRepository = issuerRepository;
 		this.workRepository = workRepository;
 		this.constructionSiteWorkRepository = constructionSiteWorkRepository;
+		this.authServiceStub = authServiceStub;
 	}
 
 	/**
@@ -72,16 +72,14 @@ public class ConstructionSiteResource {
 			throws URISyntaxException, BadRequestException {
 		log.debug("REST request to create construction site : {}", constructionSiteCreateDTO);
 
-		Issuer issuer = issuerRepository.findById(constructionSiteCreateDTO.getIssuerId())
-				.orElseThrow(() -> new BadRequestException(
-						"Issuer with id: " + constructionSiteCreateDTO.getIssuerId() + " is not present."));
+		Issuer issuer = authServiceStub.getIssuer(constructionSiteCreateDTO.getIssuerId());
 
 		ConstructionSite site = new ConstructionSite(constructionSiteCreateDTO.getName(),
 				constructionSiteCreateDTO.getDescription());
 		site = constructionSiteRepository.save(site);
 		return ResponseEntity.created(new URI("/api/construction-site/" + site.getId())).body(site);
 	}
-	
+
 	/**
 	 * {@code POST  /construction-site/id/work} : Add work to construction site.
 	 *
@@ -90,16 +88,15 @@ public class ConstructionSiteResource {
 	 * @throws BadRequestException
 	 */
 	@PostMapping("/construction-site/{id}/work")
-	public ResponseEntity<Object> addWorkToConstructionSite(@PathVariable("id") @NotNull Long constructionSiteId, @Valid @RequestBody ConstructionSiteWorkCreateDTO dto)
-			throws URISyntaxException, BadRequestException {
+	public ResponseEntity<Object> addWorkToConstructionSite(@PathVariable("id") @NotNull Long constructionSiteId,
+			@Valid @RequestBody ConstructionSiteWorkCreateDTO dto) throws URISyntaxException, BadRequestException {
 		log.debug("REST request to add work to construction site: {}", dto);
 
-		Issuer issuer = issuerRepository.findById(dto.getIssuerId()).orElseThrow(
-				() -> new BadRequestException("Issuer with id: " + dto.getIssuerId() + " is not present."));
+		// checks valid issuer for managing sites and works
+		Issuer issuer = authServiceStub.getIssuer(dto.getIssuerId());
 
-		ConstructionSite constructionSite = constructionSiteRepository.findById(constructionSiteId)
-				.orElseThrow(() -> new BadRequestException(
-						"Construction site with id: " + constructionSiteId + " is not present."));
+		ConstructionSite constructionSite = constructionSiteRepository.findById(constructionSiteId).orElseThrow(
+				() -> new BadRequestException("Construction site with id: " + constructionSiteId + " is not present."));
 
 		List<String> errors = new ArrayList<>();
 
