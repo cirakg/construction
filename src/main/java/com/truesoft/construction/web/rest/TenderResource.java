@@ -2,7 +2,6 @@ package com.truesoft.construction.web.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Instant;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -83,15 +82,9 @@ public class TenderResource {
 
 		List<ConstructionWorkCompositeId> constructionSiteWorkIds = tenderCreateDTO.getConstructionSiteWorkIds();
 
-		Tender tender = new Tender();
-		tender.setName(tenderCreateDTO.getName());
-		tender.setDateCreated(Instant.now());
-		tender.setDescription(tenderCreateDTO.getDescription());
-		tender.setStatus(TenderStatus.ACTIVE); // TODO should go to NEW first and then started by the issuer
-		tender.setDateStarted(Instant.now());
-		Issuer issuer = issuerRepository.findById(tenderCreateDTO.getIssuerId()).orElseThrow(
-				() -> new BadRequestException("Issuer with id: " + tenderCreateDTO.getIssuerId() + " is not present."));
-		tender.setIssuer(issuer);
+		Issuer issuer = authServiceStub.getIssuer(tenderCreateDTO.getIssuerId());
+
+		Tender tender = new Tender(tenderCreateDTO.getName(), tenderCreateDTO.getDescription(), issuer);
 		tender = tenderRepository.save(tender);
 
 		for (ConstructionWorkCompositeId id : constructionSiteWorkIds) {
@@ -174,7 +167,11 @@ public class TenderResource {
 			throw new BadRequestException("You cannot accept other issuer's offer");
 		}
 
-		tenderService.acceptTenderOffer(offer);
+		try {
+			tenderService.acceptTenderOffer(offer);
+		} catch (Exception e) {
+			throw new BadRequestException("Error accepting offer: " + e.getMessage());
+		}
 
 		return ResponseEntity.accepted().build();
 	}

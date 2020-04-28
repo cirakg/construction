@@ -25,6 +25,20 @@ public class Tender implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private Tender() {
+		super();
+	}
+
+	public Tender(@NotNull String name, String description, Issuer issuer) {
+		super();
+		this.name = name;
+		this.description = description;
+		this.issuer = issuer;
+		this.dateCreated = Instant.now();
+		this.status = TenderStatus.ACTIVE;
+		this.dateStarted = Instant.now(); // TODO we start the tender on creation
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -55,81 +69,28 @@ public class Tender implements Serializable {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getName() {
 		return name;
-	}
-
-	public Tender name(String name) {
-		this.name = name;
-		return this;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public Tender description(String description) {
-		this.description = description;
-		return this;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public Instant getDateCreated() {
 		return dateCreated;
-	}
-
-	public Tender dateCreated(Instant dateCreated) {
-		this.dateCreated = dateCreated;
-		return this;
-	}
-
-	public void setDateCreated(Instant dateCreated) {
-		this.dateCreated = dateCreated;
 	}
 
 	public Instant getDateStarted() {
 		return dateStarted;
 	}
 
-	public Tender dateStarted(Instant dateStarted) {
-		this.dateStarted = dateStarted;
-		return this;
-	}
-
-	public void setDateStarted(Instant dateStarted) {
-		this.dateStarted = dateStarted;
-	}
-
 	public TenderStatus getStatus() {
 		return status;
 	}
 
-	public Tender status(TenderStatus status) {
-		this.status = status;
-		return this;
-	}
-
-	public void setStatus(TenderStatus status) {
-		this.status = status;
-	}
-
 	public Issuer getIssuer() {
 		return issuer;
-	}
-
-	public void setIssuer(Issuer issuer) {
-		this.issuer = issuer;
 	}
 
 	@Override
@@ -153,5 +114,9 @@ public class Tender implements Serializable {
 		return "Tender{" + "id=" + getId() + ", name='" + getName() + "'" + ", description='" + getDescription() + "'"
 				+ ", dateCreated='" + getDateCreated() + "'" + ", dateStarted='" + getDateStarted() + "'" + ", status='"
 				+ getStatus() + "'" + "}";
+	}
+
+	public void closeTender() {
+		this.status = TenderStatus.CLOSED;
 	}
 }

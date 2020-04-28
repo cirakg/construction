@@ -64,82 +64,45 @@ public class Offer implements Serializable {
 	@JsonIgnoreProperties("offers")
 	private Bidder bidder;
 
-	// jhipster-needle-entity-add-field - JHipster will add fields here, do not
-	// remove
 	public Long getId() {
 		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public Double getPrice() {
 		return price;
 	}
 
-	public Offer price(Double price) {
-		this.price = price;
-		return this;
-	}
-
-	public void setPrice(Double price) {
-		this.price = price;
-	}
-
 	public String getDescription() {
 		return description;
-	}
-
-	public Offer description(String description) {
-		this.description = description;
-		return this;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public TenderOfferStatus getStatus() {
 		return status;
 	}
 
-	public Offer status(TenderOfferStatus status) {
-		this.status = status;
-		return this;
-	}
-
-	public void setStatus(TenderOfferStatus status) {
-		this.status = status;
-	}
-
 	public Tender getTender() {
 		return tender;
-	}
-
-	public Offer tender(Tender tender) {
-		this.tender = tender;
-		return this;
-	}
-
-	public void setTender(Tender tender) {
-		this.tender = tender;
 	}
 
 	public Bidder getBidder() {
 		return bidder;
 	}
-
-	public Offer bidder(Bidder bidder) {
-		this.bidder = bidder;
-		return this;
+	
+	public void acceptOffer() throws Exception {
+		if(this.status == TenderOfferStatus.PENDING) {
+			this.status = TenderOfferStatus.ACCEPTED;
+		}else {
+			throw new Exception("Cannot accept offer which is not in pending status");
+		}
 	}
-
-	public void setBidder(Bidder bidder) {
-		this.bidder = bidder;
+	
+	public void rejectOffer() throws Exception {
+		if(this.status == TenderOfferStatus.PENDING) {
+			this.status = TenderOfferStatus.REJECTED;
+		}else {
+			throw new Exception("Cannot reject offer which is not in pending status");
+		}
 	}
-	// jhipster-needle-entity-add-getters-setters - JHipster will add getters and
-	// setters here, do not remove
 
 	@Override
 	public boolean equals(Object o) {

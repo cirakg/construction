@@ -7,8 +7,6 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.truesoft.construction.domain.Offer;
-import com.truesoft.construction.domain.enumeration.TenderOfferStatus;
-import com.truesoft.construction.domain.enumeration.TenderStatus;
 import com.truesoft.construction.repository.OfferRepository;
 import com.truesoft.construction.repository.TenderRepository;
 
@@ -24,17 +22,19 @@ public class TenderService {
 	}
 
 	@Transactional
-	public synchronized void acceptTenderOffer(Offer offer) {
+	public synchronized void acceptTenderOffer(Offer offer) throws Exception {
 
 		List<Offer> offers = offerRepository.findAllByTender(offer.getTender());
 		for (Offer o : offers) {
-			o.setStatus(TenderOfferStatus.REJECTED);
-			offerRepository.save(o);
+			if(!o.getId().equals(offer.getId())) {
+				o.rejectOffer();
+				offerRepository.save(o);
+			}
 		}
 
-		offer.setStatus(TenderOfferStatus.ACCEPTED);
+		offer.acceptOffer();
 		offer = offerRepository.save(offer);
-	 	offer.getTender().setStatus(TenderStatus.CLOSED);
+		offer.getTender().closeTender();
 		tenderRepository.save(offer.getTender());
 	}
 

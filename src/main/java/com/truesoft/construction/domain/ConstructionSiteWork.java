@@ -56,14 +56,6 @@ public class ConstructionSiteWork implements Serializable {
 	@Column(name = "status", nullable = false)
 	private ConstructionSiteWorkStatus status;
 
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@MapsId("constructionId")
-//	private ConstructionSite constructionSite;
-//
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@MapsId("workId")
-//	private Work work;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tender_id", nullable = false)
 	private Tender tender;

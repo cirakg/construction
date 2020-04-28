@@ -1,27 +1,22 @@
 package com.truesoft.construction.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,260 +28,94 @@ import com.truesoft.construction.domain.enumeration.ConstructionSiteWorkStatus;
 import com.truesoft.construction.repository.ConstructionSiteRepository;
 import com.truesoft.construction.repository.ConstructionSiteWorkRepository;
 import com.truesoft.construction.repository.WorkRepository;
+import com.truesoft.construction.web.rest.dto.ConstructionSiteCreateDTO;
+import com.truesoft.construction.web.rest.dto.ConstructionSiteWorkCreateDTO;
+
 /**
- * Integration tests for the {@link ConstructionSiteWorkResource} REST controller.
+ * Integration tests for the {@link ConstructionSiteWorkResource} REST
+ * controller.
  */
 @SpringBootTest(classes = ConstructionApp.class)
-
+@RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
+@ActiveProfiles("dev")
 public class ConstructionSiteWorkResourceIT {
 
-    private static final Instant DEFAULT_DATE_CREATED = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_DATE_CREATED = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+	private static final ConstructionSiteWorkStatus DEFAULT_STATUS = ConstructionSiteWorkStatus.NEW;
 
-    private static final ConstructionSiteWorkStatus DEFAULT_STATUS = ConstructionSiteWorkStatus.NEW;
-    private static final ConstructionSiteWorkStatus UPDATED_STATUS = ConstructionSiteWorkStatus.ACTIVE;
+	@Autowired
+	private ConstructionSiteWorkRepository constructionSiteWorkRepository;
+	@Autowired
+	private ConstructionSiteRepository constructionSiteRepository;
+	@Autowired
+	private WorkRepository workRepository;
 
-    @Autowired
-    private ConstructionSiteWorkRepository constructionSiteWorkRepository;
-    @Autowired
-    private ConstructionSiteRepository constructionSiteRepository;
-    @Autowired
-    private WorkRepository workRepository;
+	@Autowired
+	private MockMvc restConstructionSiteWorkMockMvc;
+	
+	private ConstructionSite cs;
+	private Work work;
+	private ConstructionSiteWorkCreateDTO constructionSiteWorkCreateDTO = new ConstructionSiteWorkCreateDTO();
 
-    @Autowired
-    private EntityManager em;
+	@BeforeEach
+	public void initTest() throws InterruptedException {
 
-    @Autowired
-    private MockMvc restConstructionSiteWorkMockMvc;
+		work = new Work("test work");
+		work = workRepository.save(work);
+		
+		cs = new ConstructionSite("cs name", "cs desc");
+		cs = constructionSiteRepository.save(cs);
 
-    private ConstructionSiteWork constructionSiteWork;
+		constructionSiteWorkCreateDTO = new ConstructionSiteWorkCreateDTO();
+		List<Long> workIds = new ArrayList<Long>();
+		workIds.add(work.getId());
+		constructionSiteWorkCreateDTO.setWorkIds(workIds);
+		constructionSiteWorkCreateDTO.setIssuerId(1l);
+	}
+	
+	@Test
+	@Transactional
+	public void createConstructionSite() throws Exception {
+		int databaseSizeBeforeCreate = constructionSiteRepository.findAll().size();
 
-    @BeforeEach
-    public void initTest() {
-    	
-    	ConstructionSite cs = new ConstructionSite("cs1", "cs1 desc");
-    	constructionSiteRepository.save(cs);
+		ConstructionSiteCreateDTO dto = new ConstructionSiteCreateDTO();
+		dto.setDescription("testD");
+		dto.setIssuerId(1l);
+		dto.setName("name");
+		// Create the ConstructionSiteWork
+		restConstructionSiteWorkMockMvc.perform(post("/api/construction-site").contentType(MediaType.APPLICATION_JSON)
+				.content(TestUtil.convertObjectToJsonBytes(dto))).andExpect(status().isCreated());
 
-    	Work w = new Work("test work");
-    	workRepository.save(w);
-    	
-    }
+		// Validate the ConstructionSiteWork in the database
+		List<ConstructionSite> constructionSiteList = constructionSiteRepository.findAll();
+		assertThat(constructionSiteList).hasSize(databaseSizeBeforeCreate + 1);
+		ConstructionSite testConstructionSite = constructionSiteList.get(constructionSiteList.size() - 1);
+		assertThat(testConstructionSite.getDescription()).isEqualTo("testD");
+		assertThat(testConstructionSite.getName()).isEqualTo("name");
+	}
+	
+	@Test
+	@Transactional
+	public void addConstructionSiteWork() throws Exception {
+		int databaseSizeBeforeCreate = constructionSiteWorkRepository.findAll().size();
+		
+		// Create the ConstructionSiteWork
+		restConstructionSiteWorkMockMvc
+				.perform(post("/api/construction-site/" + cs.getId() + "/work").contentType(MediaType.APPLICATION_JSON)
+						.content(TestUtil.convertObjectToJsonBytes(constructionSiteWorkCreateDTO)))
+				.andExpect(status().isOk());
 
-    @Test
-    @Transactional
-    public void createConstructionSiteWork() throws Exception {
-        int databaseSizeBeforeCreate = constructionSiteWorkRepository.findAll().size();
+		// Validate the ConstructionSiteWork in the database
+		List<ConstructionSiteWork> constructionSiteWorkList = constructionSiteWorkRepository.findAll();
+		assertThat(constructionSiteWorkList).hasSize(databaseSizeBeforeCreate + 1);
+		ConstructionSiteWork testConstructionSiteWork = constructionSiteWorkList
+				.get(constructionSiteWorkList.size() - 1);
+		assertThat(testConstructionSiteWork.getStatus()).isEqualTo(DEFAULT_STATUS);
+		assertThat(testConstructionSiteWork.getWorkId()).isEqualTo(work.getId());
+		assertThat(testConstructionSiteWork.getStatus()).isEqualTo(DEFAULT_STATUS);
 
-        // Create the ConstructionSiteWork
-        restConstructionSiteWorkMockMvc.perform(post("/api/construction-site-works")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(constructionSiteWork)))
-            .andExpect(status().isCreated());
+	}
 
-        // Validate the ConstructionSiteWork in the database
-        List<ConstructionSiteWork> constructionSiteWorkList = constructionSiteWorkRepository.findAll();
-        assertThat(constructionSiteWorkList).hasSize(databaseSizeBeforeCreate + 1);
-        ConstructionSiteWork testConstructionSiteWork = constructionSiteWorkList.get(constructionSiteWorkList.size() - 1);
-        assertThat(testConstructionSiteWork.getDateCreated()).isEqualTo(DEFAULT_DATE_CREATED);
-        assertThat(testConstructionSiteWork.getStatus()).isEqualTo(DEFAULT_STATUS);
 
-        // Validate the id for MapsId, the ids must be same
-        assertThat(testConstructionSiteWork.getId()).isEqualTo(testConstructionSiteWork.getConstructionSite().getId());
-    }
 
-    @Test
-    @Transactional
-    public void createConstructionSiteWorkWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = constructionSiteWorkRepository.findAll().size();
-
-        // Create the ConstructionSiteWork with an existing ID
-        constructionSiteWork.setId(1L);
-
-        // An entity with an existing ID cannot be created, so this API call must fail
-        restConstructionSiteWorkMockMvc.perform(post("/api/construction-site-works")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(constructionSiteWork)))
-            .andExpect(status().isBadRequest());
-
-        // Validate the ConstructionSiteWork in the database
-        List<ConstructionSiteWork> constructionSiteWorkList = constructionSiteWorkRepository.findAll();
-        assertThat(constructionSiteWorkList).hasSize(databaseSizeBeforeCreate);
-    }
-
-    @Test
-    @Transactional
-    public void updateConstructionSiteWorkMapsIdAssociationWithNewId() throws Exception {
-        // Initialize the database
-        constructionSiteWorkRepository.saveAndFlush(constructionSiteWork);
-        int databaseSizeBeforeCreate = constructionSiteWorkRepository.findAll().size();
-
-        // Add a new parent entity
-        ConstructionSite constructionSite = ConstructionSiteResourceIT.createUpdatedEntity(em);
-        em.persist(constructionSite);
-        em.flush();
-
-        // Load the constructionSiteWork
-        ConstructionSiteWork updatedConstructionSiteWork = constructionSiteWorkRepository.findById(constructionSiteWork.getId()).get();
-        // Disconnect from session so that the updates on updatedConstructionSiteWork are not directly saved in db
-        em.detach(updatedConstructionSiteWork);
-
-        // Update the ConstructionSite with new association value
-        updatedConstructionSiteWork.setConstructionSite(constructionSite);
-
-        // Update the entity
-        restConstructionSiteWorkMockMvc.perform(put("/api/construction-site-works")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedConstructionSiteWork)))
-            .andExpect(status().isOk());
-
-        // Validate the ConstructionSiteWork in the database
-        List<ConstructionSiteWork> constructionSiteWorkList = constructionSiteWorkRepository.findAll();
-        assertThat(constructionSiteWorkList).hasSize(databaseSizeBeforeCreate);
-        ConstructionSiteWork testConstructionSiteWork = constructionSiteWorkList.get(constructionSiteWorkList.size() - 1);
-
-        // Validate the id for MapsId, the ids must be same
-        // Uncomment the following line for assertion. However, please note that there is a known issue and uncommenting will fail the test.
-        // Please look at https://github.com/jhipster/generator-jhipster/issues/9100. You can modify this test as necessary.
-        // assertThat(testConstructionSiteWork.getId()).isEqualTo(testConstructionSiteWork.getConstructionSite().getId());
-    }
-
-    @Test
-    @Transactional
-    public void checkDateCreatedIsRequired() throws Exception {
-        int databaseSizeBeforeTest = constructionSiteWorkRepository.findAll().size();
-        // set the field null
-        constructionSiteWork.setDateCreated(null);
-
-        // Create the ConstructionSiteWork, which fails.
-
-        restConstructionSiteWorkMockMvc.perform(post("/api/construction-site-works")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(constructionSiteWork)))
-            .andExpect(status().isBadRequest());
-
-        List<ConstructionSiteWork> constructionSiteWorkList = constructionSiteWorkRepository.findAll();
-        assertThat(constructionSiteWorkList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    public void checkStatusIsRequired() throws Exception {
-        int databaseSizeBeforeTest = constructionSiteWorkRepository.findAll().size();
-        // set the field null
-        constructionSiteWork.setStatus(null);
-
-        // Create the ConstructionSiteWork, which fails.
-
-        restConstructionSiteWorkMockMvc.perform(post("/api/construction-site-works")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(constructionSiteWork)))
-            .andExpect(status().isBadRequest());
-
-        List<ConstructionSiteWork> constructionSiteWorkList = constructionSiteWorkRepository.findAll();
-        assertThat(constructionSiteWorkList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    public void getAllConstructionSiteWorks() throws Exception {
-        // Initialize the database
-        constructionSiteWorkRepository.saveAndFlush(constructionSiteWork);
-
-        // Get all the constructionSiteWorkList
-        restConstructionSiteWorkMockMvc.perform(get("/api/construction-site-works?sort=id,desc"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(constructionSiteWork.getId().intValue())))
-            .andExpect(jsonPath("$.[*].dateCreated").value(hasItem(DEFAULT_DATE_CREATED.toString())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
-    }
-    
-    @Test
-    @Transactional
-    public void getConstructionSiteWork() throws Exception {
-        // Initialize the database
-        constructionSiteWorkRepository.saveAndFlush(constructionSiteWork);
-
-        // Get the constructionSiteWork
-        restConstructionSiteWorkMockMvc.perform(get("/api/construction-site-works/{id}", constructionSiteWork.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(constructionSiteWork.getId().intValue()))
-            .andExpect(jsonPath("$.dateCreated").value(DEFAULT_DATE_CREATED.toString()))
-            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()));
-    }
-
-    @Test
-    @Transactional
-    public void getNonExistingConstructionSiteWork() throws Exception {
-        // Get the constructionSiteWork
-        restConstructionSiteWorkMockMvc.perform(get("/api/construction-site-works/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @Transactional
-    public void updateConstructionSiteWork() throws Exception {
-        // Initialize the database
-        constructionSiteWorkRepository.saveAndFlush(constructionSiteWork);
-
-        int databaseSizeBeforeUpdate = constructionSiteWorkRepository.findAll().size();
-
-        // Update the constructionSiteWork
-        ConstructionSiteWork updatedConstructionSiteWork = constructionSiteWorkRepository.findById(constructionSiteWork.getId()).get();
-        // Disconnect from session so that the updates on updatedConstructionSiteWork are not directly saved in db
-        em.detach(updatedConstructionSiteWork);
-        updatedConstructionSiteWork
-            .dateCreated(UPDATED_DATE_CREATED)
-            .status(UPDATED_STATUS);
-
-        restConstructionSiteWorkMockMvc.perform(put("/api/construction-site-works")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedConstructionSiteWork)))
-            .andExpect(status().isOk());
-
-        // Validate the ConstructionSiteWork in the database
-        List<ConstructionSiteWork> constructionSiteWorkList = constructionSiteWorkRepository.findAll();
-        assertThat(constructionSiteWorkList).hasSize(databaseSizeBeforeUpdate);
-        ConstructionSiteWork testConstructionSiteWork = constructionSiteWorkList.get(constructionSiteWorkList.size() - 1);
-        assertThat(testConstructionSiteWork.getDateCreated()).isEqualTo(UPDATED_DATE_CREATED);
-        assertThat(testConstructionSiteWork.getStatus()).isEqualTo(UPDATED_STATUS);
-    }
-
-    @Test
-    @Transactional
-    public void updateNonExistingConstructionSiteWork() throws Exception {
-        int databaseSizeBeforeUpdate = constructionSiteWorkRepository.findAll().size();
-
-        // Create the ConstructionSiteWork
-
-        // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restConstructionSiteWorkMockMvc.perform(put("/api/construction-site-works")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(constructionSiteWork)))
-            .andExpect(status().isBadRequest());
-
-        // Validate the ConstructionSiteWork in the database
-        List<ConstructionSiteWork> constructionSiteWorkList = constructionSiteWorkRepository.findAll();
-        assertThat(constructionSiteWorkList).hasSize(databaseSizeBeforeUpdate);
-    }
-
-    @Test
-    @Transactional
-    public void deleteConstructionSiteWork() throws Exception {
-        // Initialize the database
-        constructionSiteWorkRepository.saveAndFlush(constructionSiteWork);
-
-        int databaseSizeBeforeDelete = constructionSiteWorkRepository.findAll().size();
-
-        // Delete the constructionSiteWork
-        restConstructionSiteWorkMockMvc.perform(delete("/api/construction-site-works/{id}", constructionSiteWork.getId())
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNoContent());
-
-        // Validate the database contains one less item
-        List<ConstructionSiteWork> constructionSiteWorkList = constructionSiteWorkRepository.findAll();
-        assertThat(constructionSiteWorkList).hasSize(databaseSizeBeforeDelete - 1);
-    }
 }
